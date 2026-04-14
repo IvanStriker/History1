@@ -1,0 +1,107 @@
+{#
+  Jinja2-шаблоны, используемые на этой странице:
+  ──────────────────────────────────────────────
+  {{ site_title }}        — str  : Название сайта (напр. "Хронос")
+                            Используется в <title> и в главном заголовке <h1>.
+
+  {{ site_subtitle }}     — str  : Короткий подзаголовок (напр. "Карточки великих личностей")
+                            Отображается под основным заголовком.
+
+  {{ site_description }}  — str  : Описание проекта (2–4 предложения).
+                            Выводится в центральном текстовом блоке.
+
+  {{ total_cards_count }} — int  : Общее число карточек в базе данных.
+                            Используется в информационном бейдже.
+
+  {{ categories }}        — list[str] : Список эпох / тематических разделов
+                            (напр. ["Античность", "Средневековье", "Новое время"]).
+                            Перебирается в цикле {% for %} для вывода чипов категорий.
+#}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ site_title }} — История в карточках</title>
+
+  <!-- Bootstrap 5 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  />
+
+  <!-- Google Fonts: Cinzel Decorative + EB Garamond -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href=" {{ url_for('static', filename='css/home.css') }}" />
+</head>
+<body>
+
+  <!-- Phaser рисует частицы-фоновые эффекты прямо в этот контейнер -->
+  <div id="phaser-bg" aria-hidden="true"></div>
+
+  <!-- Основной контент поверх Phaser-фона -->
+  <main class="page-wrapper">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-7 col-lg-9 col-md-11 text-center hero-col">
+
+          <!-- Декоративный верхний орнамент -->
+          <div class="ornament ornament--top" aria-hidden="true">
+            ✦ &nbsp;&nbsp; ✦ &nbsp;&nbsp; ✦
+          </div>
+
+          <!-- Логотип / заголовок -->
+          <h1 class="site-title">{{ site_title }}</h1>
+          <p class="site-subtitle">{{ site_subtitle }}</p>
+
+          <div class="golden-rule" aria-hidden="true"></div>
+
+          <!-- Описание -->
+          <p class="site-description">{{ site_description }}</p>
+
+          <!-- Информационный бейдж с числом карточек -->
+          <div class="info-badge">
+            <span class="info-badge__number">{{ total_cards_count }}</span>
+            <span class="info-badge__label">исторических деятелей</span>
+          </div>
+
+          <!-- Чипы категорий (цикл по переменной categories) -->
+          <div class="categories-row" role="list">
+            {% for cat in categories %}
+            <span class="category-chip" role="listitem">{{ cat }}</span>
+            {% endfor %}
+          </div>
+
+          <!-- Кнопка «Начать тренировку» — ведёт на /train -->
+          <a href="/train" class="btn-start" role="button">
+            <span class="btn-start__inner">
+              <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              Начать тренировку
+            </span>
+          </a>
+
+          <!-- Декоративный нижний орнамент -->
+          <div class="ornament ornament--bottom" aria-hidden="true">
+            ✦ &nbsp;&nbsp; ✦ &nbsp;&nbsp; ✦
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Phaser 3 -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+
+  <script src=" {{ url_for('static', filename='js/home.js') }} "></script>
+</body>
+</html>

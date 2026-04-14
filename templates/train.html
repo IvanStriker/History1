@@ -1,0 +1,170 @@
+{#
+  Jinja2-шаблоны, используемые на этой странице:
+  ──────────────────────────────────────────────────────────────────────────────
+  {{ card_indices | tojson }}
+      — list[int], сериализованный в JSON.
+        Массив индексов карточек, случайно сгенерированных сервером для данной
+        тренировки. JS считывает его из атрибута data-* тега <body> и использует
+        для навигации. Порядок элементов определяет порядок предъявления карточек.
+        Пример значения: [42, 7, 15, 3, 28, 61, 4, 19]
+
+  {{ total_questions }}
+      — int: количество вопросов в текущей тренировке (= len(card_indices)).
+        Отображается в счётчике прогресса «X / total_questions».
+        Пример: 20
+
+  {{ session_id }}
+      — str: уникальный идентификатор сессии тренировки (UUID).
+        Хранится в атрибуте data-session-id для возможной серверной синхронизации
+        прогресса. В чисто-клиентской версии не используется JS напрямую, но
+        передаётся как мета-данные.
+        Пример: "a3f2c1d0-8b4e-4f9a-b7c3-1e2d5f6a9b0c"
+#}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тренировка — Хронос</title>
+
+  <!-- Bootstrap 5 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href=" {{ url_for('static', filename='css/train.css') }} " />
+</head>
+
+<!--
+  data-indices  — JSON-строка массива индексов карточек (из Jinja2)
+  data-total    — общее число вопросов (из Jinja2)
+  data-session  — идентификатор сессии (из Jinja2)
+-->
+<body
+  data-indices='{{ card_indices | tojson }}'
+  data-total="{{ total_questions }}"
+  data-session="{{ session_id }}"
+>
+
+  <!-- ╔═══════════════════════════════════════════════════╗
+       ║  ШАПКА: логотип + счётчик прогресса              ║
+       ╚═══════════════════════════════════════════════════╝ -->
+  <header class="train-header">
+    <a href="/home" class="train-logo" aria-label="На главную">Хронос</a>
+
+    <!-- Счётчик прогресса (слева вверху, как требуется) -->
+    <div class="progress-block" role="status" aria-live="polite">
+
+      <div class="progress-stat progress-stat--correct" title="Верных ответов">
+        <span class="progress-stat__icon" aria-hidden="true">✓</span>
+        <span class="progress-stat__num" id="count-correct">0</span>
+      </div>
+
+      <div class="progress-divider" aria-hidden="true">|</div>
+
+      <div class="progress-stat progress-stat--wrong" title="Ошибок">
+        <span class="progress-stat__icon" aria-hidden="true">✗</span>
+        <span class="progress-stat__num" id="count-wrong">0</span>
+      </div>
+
+      <div class="progress-divider" aria-hidden="true">|</div>
+
+      <div class="progress-stat progress-stat--total" title="Всего вопросов">
+        <span class="progress-stat__label">из</span>
+        <span class="progress-stat__num" id="count-total">{{ total_questions }}</span>
+      </div>
+
+    </div>
+
+    <!-- Номер текущей карточки (правый край) -->
+    <div class="card-position" aria-label="Текущая карточка">
+      <span id="card-pos-current">1</span>
+      <span class="card-position__sep">/</span>
+      <span id="card-pos-total">{{ total_questions }}</span>
+    </div>
+  </header>
+
+  <!-- ╔═══════════════════════════════════════════════════╗
+       ║  ОСНОВНАЯ ОБЛАСТЬ: Phaser-карточка               ║
+       ╚═══════════════════════════════════════════════════╝ -->
+  <main class="train-main">
+
+    <!-- Контейнер, в который Phaser монтирует <canvas> -->
+    <div id="phaser-card" aria-label="Карточка"></div>
+
+    <!-- Оверлей-подсказка (показывается при загрузке карточки) -->
+    <div class="card-hint" id="card-hint" aria-live="polite">
+      <span class="spinner-border spinner-border-sm text-warning me-2" role="status"></span>
+      Загрузка карточки…
+    </div>
+
+    <!-- ── Область ответа ── -->
+    <div class="answer-area" id="answer-area">
+
+      <div class="answer-row">
+        <input
+          type="text"
+          id="answer-input"
+          class="answer-input"
+          placeholder="Введите ваш ответ…"
+          autocomplete="off"
+          aria-label="Поле для ввода ответа"
+        />
+        <button id="submit-btn" class="btn-action btn-submit" type="button">
+          Проверить
+        </button>
+      </div>
+
+      <!-- Кнопка переворота (скрыта до проверки ответа) -->
+      <button
+        id="flip-btn"
+        class="btn-flip"
+        type="button"
+        style="display:none"
+        aria-label="Перевернуть карточку"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+        </svg>
+        Перевернуть
+      </button>
+
+    </div>
+
+  </main>
+
+  <!-- ╔═══════════════════════════════════════════════════╗
+       ║  НИЖНЯЯ НАВИГАЦИЯ: Назад / Далее                 ║
+       ╚═══════════════════════════════════════════════════╝ -->
+  <footer class="train-footer">
+    <button id="prev-btn" class="btn-nav btn-nav--prev" type="button" disabled>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+      Назад
+    </button>
+
+    <div class="footer-dots" id="footer-dots" aria-hidden="true">
+      <!-- JS заполнит точки-индикаторы прогресса -->
+    </div>
+
+    <button id="next-btn" class="btn-nav btn-nav--next" type="button">
+      Далее
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+    </button>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Phaser 3 -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+
+  <script src=" {{ url_for('static', filename='js/train.js') }} "></script>
+</body>
+</html>
