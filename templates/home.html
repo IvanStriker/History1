@@ -66,7 +66,7 @@
           <!-- Информационный бейдж с числом карточек -->
           <div class="info-badge">
             <span class="info-badge__number">{{ total_cards_count }}</span>
-            <span class="info-badge__label">исторических деятелей</span>
+            <span class="info-badge__label">карточек</span>
           </div>
 
 <!--          &lt;!&ndash; Чипы категорий (цикл по переменной categories) &ndash;&gt;-->
@@ -75,7 +75,7 @@
 <!--            <span class="category-chip" role="listitem">{{ cat }}</span>-->
 <!--            {% endfor %}-->
 <!--          </div>-->
-
+          <div class="categories-row"> 
           <!-- Кнопка «Начать тренировку» — ведёт на /train -->
           <a href="/train" class="btn-start" role="button">
             <span class="btn-start__inner">
@@ -85,6 +85,7 @@
               Начать тренировку
             </span>
           </a>
+          </div>
 
           <!-- Декоративный нижний орнамент -->
           <div class="ornament ornament--bottom" aria-hidden="true">
