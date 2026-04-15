@@ -1,8 +1,8 @@
 services:
   web:
     build: .
-    volumes:
-      - .:/app
+    #volumes:
+    #  - .:/app
     expose:
       - "8000"
     depends_on:

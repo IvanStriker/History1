@@ -3,13 +3,15 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 1. системные зависимости
-RUN apt update && apt install -y \
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu|http://mirror.yandex.ru/ubuntu|g' /etc/apt/sources.list && \
+    sed -i 's|http://security.ubuntu.com/ubuntu|http://mirror.yandex.ru/ubuntu|g' /etc/apt/sources.list && \
+    apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    ca-certificates \
     python3 \
     python3-pip \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
+    build-essential && \
+    rm -rf /var/lib/apt/lists/*
 # 2. установка uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 

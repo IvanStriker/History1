@@ -61,12 +61,11 @@ def create_app() -> Flask:
 
         return render_template(
             "home.html",
-            site_title="Хронос",
+            site_title="Историческая игра",
             site_subtitle="Карточки великих исторических деятелей",
             site_description=(
                 "Тренируй знания истории с помощью интерактивных карточек. "
-                "Античность, Средневековье, Новое время — выбирай эпоху "
-                "и проверяй себя в удобном темпе."
+                "Здесь мы сосредоточимся на деятелях СССР."
             ),
             total_cards_count=total,
             categories=categories,
