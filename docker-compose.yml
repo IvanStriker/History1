@@ -1,12 +1,20 @@
 services:
   web:
     build: .
+    volumes:
+      - .:/app
     expose:
       - "8000"
     depends_on:
       - db
     environment:
       DATABASE_URL: postgresql://user:pass@db:5432/appdb
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   nginx:
     image: nginx:alpine
@@ -24,10 +32,16 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: appdb
-    ports:
-      - "5433:5432"
+    expose:
+      - "5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d appdb" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   pgadmin:
     image: dpage/pgadmin4
@@ -36,6 +50,3 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: vinogradovivan548@gmail.com
       PGADMIN_DEFAULT_PASSWORD: 11111111
-
-volumes:
-  pgdata:

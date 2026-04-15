@@ -1,0 +1,11 @@
+category,front_type,front_content,back_type,back_content,answer_text
+history,text,Who was the first Roman Emperor?,text,Augustus founded the Roman Empire.,Augustus
+science,text,What is the chemical symbol for water?,text,H2O is composed of hydrogen and oxygen.,H2O
+geography,text,What is the capital of Japan?,text,Tokyo is the capital city of Japan.,Tokyo
+math,text,What is 12 * 8?,text,12 multiplied by 8 equals 96.,96
+literature,text,"Who wrote ""1984""?",text,George Orwell is the author of 1984.,George Orwell
+space,text,What is the largest planet in the Solar System?,text,Jupiter is the largest planet.,Jupiter
+history,text,In which year did World War II end?,text,The war ended in 1945.,1945
+biology,text,What is the basic unit of life?,text,The cell is the basic unit of life.,cell
+technology,text,What does CPU stand for?,text,Central Processing Unit is the meaning of CPU.,Central Processing Unit
+music,text,Who is known as the King of Pop?,text,Michael Jackson is called the King of Pop.,Michael Jackson
