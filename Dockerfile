@@ -22,4 +22,4 @@ COPY . .
 RUN uv venv
 RUN uv sync
 
-CMD ["uv", "run", "python", "main.py"]
+CMD ["uv", "run", "gunicorn", "-b", "0.0.0.0:8000", "main:app"]
