@@ -11,10 +11,10 @@ app.py — Flask-приложение «Хронос»
 
 import os
 import uuid
-import csv
 from random import sample
+import base64
 
-from flask import Flask, abort, jsonify, render_template, request
+from flask import Flask, abort, jsonify, render_template, request, url_for
 from flask_migrate import Migrate
 
 from models import Card, db
@@ -102,13 +102,14 @@ def create_app() -> Flask:
         REST-эндпоинт карточки.
 
         Query-параметры:
-          id (int) — первичный ключ
+          id (int)
 
-        Ответ 200:
-          { "id": int, "front": {...}, "back": {...} }
-        Ошибки:
-          400 — id не передан или не int
-          404 — карточка не найдена
+        Ответ:
+          {
+            "id": int,
+            "front": { "type": "text|image", "content": str },
+            "back": { ... }
+          }
         """
         card_id = request.args.get("id", type=int)
         if card_id is None:
@@ -118,7 +119,32 @@ def create_app() -> Flask:
         if card is None:
             abort(404, description=f"Карточка с id={card_id} не найдена.")
 
-        return jsonify(card.to_json())
+        # ── FRONT ─────────────────────────────────────────────
+        if getattr(card, "front_type", "text") == "image":
+            image_path = card.front_content
+
+            if not image_path or not os.path.exists('static/' + image_path):
+                abort(500, description="Файл изображения не найден.")
+
+            image_path = card.front_content.replace("./", "")
+            front = {
+                "type": "image",
+                "content": f"{url_for('static', filename=image_path)}",
+            }
+        else:
+            front = {
+                "type": "text",
+                "content": card.front_content,
+            }
+
+        # ── BACK (без изменений логики, можно аналогично расширить при необходимости) ──
+        back = card.to_json().get("back") if hasattr(card, "to_json") else {}
+
+        return jsonify({
+            "id": card.id,
+            "front": front,
+            "back": back,
+        })
 
     # ── Обработчики ошибок ────────────────────────────────────────────────────
 

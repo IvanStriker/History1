@@ -184,22 +184,30 @@ class CardScene extends Phaser.Scene {
   }
 
   /* ── _handleLoad ─────────────────────────────────────────── */
-  _handleLoad(data) {
-    this.currentData    = data;
-    this.isShowingBack  = false;
-    this.isBusy         = false;
+    _handleLoad(data) {
+      this.currentData = data;
+      this.isShowingBack = false;
+      this.isBusy = false;
 
-    this._setFaceContent(this.frontContainer, data.front);
-    this._setFaceContent(this.backContainer,  data.back);
+      // ❗ очистка старых изображений
+      [this.frontContainer, this.backContainer].forEach(face => {
+        if (face._imgObj) {
+          face._imgObj.destroy();
+          face._imgObj = null;
+        }
+      });
 
-    this.frontContainer.setVisible(true);
-    this.backContainer.setVisible(false);
-    this.cardRoot.setScale(1, 1);
-    this._clearGlow();
+      this._setFaceContent(this.frontContainer, data.front);
+      this._setFaceContent(this.backContainer, data.back);
 
-    /* Сообщаем DOM, что карточка загружена */
-    EventBus.emit('cardReady');
-  }
+      this.frontContainer.setVisible(true);
+      this.backContainer.setVisible(false);
+
+      this.cardRoot.setScale(1, 1);
+      this._clearGlow();
+
+      EventBus.emit('cardReady');
+    }
 
   /* ── _setFaceContent ─────────────────────────────────────── */
   _setFaceContent(face, sideData) {
@@ -219,21 +227,52 @@ class CardScene extends Phaser.Scene {
   }
 
   /* ── _loadImageToFace ────────────────────────────────────── */
-  _loadImageToFace(face, url) {
-    /* Ключ — хэш URL, чтобы не перезагружать уже загруженные */
-    const key = 'ci_' + this._simpleHash(url);
+    _loadImageToFace(face, url) {
+      const key = 'ci_' + this._simpleHash(url);
 
-    const applyImage = () => {
-      if (face._imgObj) { face._imgObj.destroy(); }
-      const img = this.add.image(0, 10, key);
-      /* Вписываем изображение в карточку */
-      const maxW = CARD_W - 60;
-      const maxH = CARD_H - 80;
-      const sc   = Math.min(maxW / img.width, maxH / img.height, 1);
-      img.setScale(sc).setOrigin(0.5);
-      face._imgObj = img;
-      face.add(img);
-    };
+      const applyImage = () => {
+        if (face._imgObj) {
+          face._imgObj.destroy();
+          face._imgObj = null;
+        }
+
+        const img = this.add.image(0, 10, key);
+
+        const maxW = CARD_W - 60;
+        const maxH = CARD_H - 80;
+
+        const scale = Math.min(
+          maxW / img.width,
+          maxH / img.height,
+          1
+        );
+
+        img.setOrigin(0.5);
+        img.setScale(scale);
+
+        face._imgObj = img;
+        face.add(img);
+      };
+
+      // если уже загружено
+      if (this.textures.exists(key)) {
+        applyImage();
+        return;
+      }
+
+      // если уже грузится — не дублируем
+      if (this.load.isLoading()) {
+        this.load.once(`filecomplete-image-${key}`, applyImage);
+        return;
+      }
+
+      // грузим изображение
+      this.load.image(key, url);
+
+      this.load.once(`filecomplete-image-${key}`, applyImage);
+
+      this.load.start();
+    }
 
     if (this.textures.exists(key)) {
       applyImage();
