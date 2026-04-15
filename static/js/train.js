@@ -272,7 +272,6 @@ class CardScene extends Phaser.Scene {
       this.load.once(`filecomplete-image-${key}`, applyImage);
 
       this.load.start();
-    }
 
     if (this.textures.exists(key)) {
       applyImage();
