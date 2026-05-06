@@ -1,5 +1,5 @@
 """
-app.py — Flask-приложение «Хронос»
+app.py — Flask-приложение
 
 Стек:
   Flask + Flask-SQLAlchemy + Flask-Migrate (Alembic)

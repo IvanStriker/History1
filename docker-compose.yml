@@ -50,3 +50,18 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: vinogradovivan548@gmail.com
       PGADMIN_DEFAULT_PASSWORD: 11111111
+
+
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - ./certbot/conf:/etc/letsencrypt      # та же папка
+  #     - ./certbot/www:/var/www/certbot
+  #   entrypoint: >
+  #     sh -c "certbot certonly --webroot 
+  #            -w /var/www/certbot 
+  #            -d example.com 
+  #            --email you@email.com 
+  #            --agree-tos --non-interactive"
+  #   depends_on:
+  #     -nginx
