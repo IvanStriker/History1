@@ -15,7 +15,7 @@ from random import sample
 import base64
 
 from flask import Flask, abort, jsonify, render_template, request, url_for
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade as db_upgrade
 
 from models import Card, db
 
@@ -31,7 +31,10 @@ def create_app() -> Flask:
     }
 
     db.init_app(app)
-    Migrate(app, db)             # регистрирует `flask db init/migrate/upgrade`
+    Migrate(app, db)
+
+    with app.app_context():
+        db_upgrade()
 
     # ── Маршруты ──────────────────────────────────────────────────────────────
 

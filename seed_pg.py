@@ -17,6 +17,13 @@ def seed():
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
 
+    cur.execute("SELECT COUNT(*) FROM cards")
+    if cur.fetchone()[0] > 0:
+        print("Already seeded, skipping")
+        cur.close()
+        conn.close()
+        return
+
     with open(CSV_FILE, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
 
