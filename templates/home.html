@@ -1,51 +1,21 @@
 {#
-  Jinja2-шаблоны, используемые на этой странице:
+  Jinja2-переменные, используемые на этой странице:
   ──────────────────────────────────────────────
   {{ site_title }}        — str  : Название сайта (напр. "Хронос")
-                            Используется в <title> и в главном заголовке <h1>.
-
-  {{ site_subtitle }}     — str  : Короткий подзаголовок (напр. "Карточки великих личностей")
-                            Отображается под основным заголовком.
-
-  {{ site_description }}  — str  : Описание проекта (2–4 предложения).
-                            Выводится в центральном текстовом блоке.
-
-  {{ total_cards_count }} — int  : Общее число карточек в базе данных.
-                            Используется в информационном бейдже.
-
+  {{ site_subtitle }}     — str  : Короткий подзаголовок
+  {{ site_description }}  — str  : Описание проекта (2–4 предложения)
+  {{ total_cards_count }} — int  : Общее число карточек в базе данных
   {{ categories }}        — list[str] : Список эпох / тематических разделов
-                            (напр. ["Античность", "Средневековье", "Новое время"]).
-                            Перебирается в цикле {% for %} для вывода чипов категорий.
 #}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ site_title }} — История в карточках</title>
+{% extends 'base.html' %}
 
-  <!-- Bootstrap 5 -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-  />
+{% block title %}{{ site_title }} — История в карточках{% endblock %}
 
-  <!-- Google Fonts: Cinzel Decorative + EB Garamond -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
-    rel="stylesheet"
-  />
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
+{% endblock %}
 
-  <!-- Настройки шрифтов применяются до рендера -->
-  <script src="{{ url_for('static', filename='js/settings-apply.js') }}"></script>
-
-  <link rel="stylesheet" href=" {{ url_for('static', filename='css/home.css') }}" />
-</head>
-<body>
-
-  <!-- Phaser рисует частицы-фоновые эффекты прямо в этот контейнер -->
-  <div id="phaser-bg" aria-hidden="true"></div>
-
+{% block body_content %}
   <!-- Основной контент поверх Phaser-фона -->
   <main class="page-wrapper">
     <div class="container">
@@ -72,37 +42,31 @@
             <span class="info-badge__label">карточек</span>
           </div>
 
-<!--          &lt;!&ndash; Чипы категорий (цикл по переменной categories) &ndash;&gt;-->
-<!--          <div class="categories-row" role="list">-->
-<!--            {% for cat in categories %}-->
-<!--            <span class="category-chip" role="listitem">{{ cat }}</span>-->
-<!--            {% endfor %}-->
-<!--          </div>-->
           <div class="btn-row">
-              <a href="/train" class="btn-start" role="button">
-                <span class="btn-start__inner">
-                  <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                  Начать тренировку
-                </span>
-              </a>
-              <a href="/cards" class="btn-start" role="button">
-                <span class="btn-start__inner">
-                  <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M3 3h8v18H3V3zm10 0h8v18h-8V3z"/>
-                  </svg>
-                  Все карточки
-                </span>
-              </a>
-              <a href="/settings" class="btn-start" role="button" aria-label="Настройки">
-                <span class="btn-start__inner">
-                  <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54A.484.484 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.476.476 0 0 0-.59.22L2.63 8.54a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.49.42h4c.25 0 .46-.18.49-.42l.36-2.54a6.99 6.99 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-                  </svg>
-                  Настройки
-                </span>
-              </a>
+            <a href="/train" class="btn-start" role="button">
+              <span class="btn-start__inner">
+                <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                Начать тренировку
+              </span>
+            </a>
+            <a href="/categories" class="btn-start" role="button">
+              <span class="btn-start__inner">
+                <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                </svg>
+                Подборки
+              </span>
+            </a>
+            <a href="/cards" class="btn-start" role="button">
+              <span class="btn-start__inner">
+                <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 3h8v18H3V3zm10 0h8v18h-8V3z"/>
+                </svg>
+                Все карточки
+              </span>
+            </a>
           </div>
 
           <!-- Декоративный нижний орнамент -->
@@ -114,13 +78,8 @@
       </div>
     </div>
   </main>
+{% endblock %}
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Phaser 3 -->
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-
-  <script src=" {{ url_for('static', filename='js/home.js') }} "></script>
-</body>
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,184 @@
+/* ═══════════════════════════════════════════
+   sign_form.css — Общие стили форм входа и регистрации
+   ═══════════════════════════════════════════ */
+
+:root {
+  --bg-base:      #080604;
+  --bg-surface:   #100d08;
+  --bg-panel:     #130f09;
+  --gold-primary: #c9a84c;
+  --gold-dim:     #8b6914;
+  --gold-glow:    rgba(201, 168, 76, 0.14);
+  --parchment:    #e8d5a3;
+  --parchment-dim:#b8a07a;
+
+  --font-display: 'Cinzel Decorative', serif;
+  --font-body:    'EB Garamond', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  background-color: var(--bg-base);
+  color: var(--parchment);
+  font-family: var(--font-body);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ── Обёртка страницы ─────────────────────── */
+.sign-page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.sign-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* ── Орнамент ─────────────────────────────── */
+.sign-ornament {
+  font-size: 0.85rem;
+  letter-spacing: 0.6em;
+  color: var(--gold-primary);
+  opacity: 0.45;
+}
+
+.sign-ornament--bottom {
+  margin-top: 0.5rem;
+}
+
+/* ── Карточка формы ───────────────────────── */
+.sign-card {
+  width: 100%;
+  background: var(--bg-panel);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* ── Вкладки Вход / Регистрация ───────────── */
+.sign-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.18);
+}
+
+.sign-tab {
+  flex: 1;
+  display: block;
+  text-align: center;
+  padding: 0.9rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--parchment-dim);
+  text-decoration: none;
+  background: transparent;
+  transition: color 0.2s, background 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.sign-tab:hover {
+  color: var(--gold-primary);
+  background: rgba(201, 168, 76, 0.04);
+}
+
+.sign-tab--active {
+  color: var(--gold-primary);
+  border-bottom-color: var(--gold-primary);
+  text-shadow: 0 0 12px rgba(201, 168, 76, 0.35);
+}
+
+/* ── Тело формы ───────────────────────────── */
+.sign-body {
+  padding: 2rem 2.2rem 2.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+/* ── Группа поля ──────────────────────────── */
+.sign-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sign-label {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--parchment-dim);
+  letter-spacing: 0.04em;
+}
+
+.sign-input {
+  background: rgba(8, 6, 4, 0.6);
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  padding: 0.6rem 1rem;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.sign-input::placeholder {
+  color: rgba(184, 160, 122, 0.35);
+}
+
+.sign-input:focus {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.14);
+}
+
+/* ── Кнопка отправки ──────────────────────── */
+.btn-sign {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold-primary));
+  border: none;
+  border-radius: 3px;
+  color: var(--bg-base);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: opacity 0.25s, transform 0.15s;
+  margin-top: 0.4rem;
+}
+
+.btn-sign:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn-sign:active {
+  transform: translateY(0);
+}
+
+/* ── Адаптив ──────────────────────────────── */
+@media (max-width: 480px) {
+  .sign-body { padding: 1.5rem 1.2rem 2rem; }
+}

@@ -1,59 +1,35 @@
 {#
-  Jinja2-шаблоны, используемые на этой странице:
+  Jinja2-переменные, используемые на этой странице:
   ──────────────────────────────────────────────────────────────────────────────
   {{ card_indices | tojson }}
       — list[int], сериализованный в JSON.
         Массив индексов карточек, случайно сгенерированных сервером для данной
-        тренировки. JS считывает его из атрибута data-* тега <body> и использует
-        для навигации. Порядок элементов определяет порядок предъявления карточек.
-        Пример значения: [42, 7, 15, 3, 28, 61, 4, 19]
+        тренировки. JS считывает его из атрибута data-* тега <body>.
+        Пример: [42, 7, 15, 3, 28, 61, 4, 19]
 
   {{ total_questions }}
       — int: количество вопросов в текущей тренировке (= len(card_indices)).
-        Отображается в счётчике прогресса «X / total_questions».
-        Пример: 20
+        Пример: 10
 
   {{ session_id }}
       — str: уникальный идентификатор сессии тренировки (UUID).
-        Хранится в атрибуте data-session-id для возможной серверной синхронизации
-        прогресса. В чисто-клиентской версии не используется JS напрямую, но
-        передаётся как мета-данные.
         Пример: "a3f2c1d0-8b4e-4f9a-b7c3-1e2d5f6a9b0c"
 #}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Тренировка</title>
+{% extends 'base.html' %}
 
-  <!-- Bootstrap 5 -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-  />
+{% block title %}Тренировка{% endblock %}
 
-  <!-- Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
-    rel="stylesheet"
-  />
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/train.css') }}" />
+{% endblock %}
 
-  <script src="{{ url_for('static', filename='js/settings-apply.js') }}"></script>
-  <link rel="stylesheet" href=" {{ url_for('static', filename='css/train.css') }} " />
-</head>
+{#
+  class="page-train"  — отключает отступ под таббар из base.css
+  data-indices / data-total / data-session — читаются train.js
+#}
+{% block body_attrs %}class="page-train" data-indices='{{ card_indices | tojson }}' data-total="{{ total_questions }}" data-session="{{ session_id }}"{% endblock %}
 
-<!--
-  data-indices  — JSON-строка массива индексов карточек (из Jinja2)
-  data-total    — общее число вопросов (из Jinja2)
-  data-session  — идентификатор сессии (из Jinja2)
--->
-<body
-  data-indices='{{ card_indices | tojson }}'
-  data-total="{{ total_questions }}"
-  data-session="{{ session_id }}"
->
-
+{% block navbar %}
   <!-- ╔═══════════════════════════════════════════════════╗
        ║  ШАПКА: логотип + счётчик прогресса              ║
        ╚═══════════════════════════════════════════════════╝ -->
@@ -65,7 +41,7 @@
       </svg>
     </a>
 
-    <!-- Счётчик прогресса (слева вверху, как требуется) -->
+    <!-- Счётчик прогресса -->
     <div class="progress-block" role="status" aria-live="polite">
 
       <div class="progress-stat progress-stat--correct" title="Верных ответов">
@@ -96,7 +72,9 @@
       <span id="card-pos-total">{{ total_questions }}</span>
     </div>
   </header>
+{% endblock %}
 
+{% block body_content %}
   <!-- ╔═══════════════════════════════════════════════════╗
        ║  ОСНОВНАЯ ОБЛАСТЬ: Phaser-карточка               ║
        ╚═══════════════════════════════════════════════════╝ -->
@@ -164,13 +142,8 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
     </button>
   </footer>
+{% endblock %}
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Phaser 3 -->
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-
-  <script src=" {{ url_for('static', filename='js/train.js') }} "></script>
-</body>
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/train.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль — Историческая игра{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+{% endblock %}
+
+{% block body_content %}
+<main class="profile-page">
+
+  <h1 class="profile-title">Профиль</h1>
+  <div class="profile-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="profile-rule"></div>
+
+  <!-- Заглушка профиля -->
+  <div class="profile-stub">
+    <div class="profile-stub__avatar" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+    </div>
+    <p class="profile-stub__text">
+      Здесь будут отображаться данные вашего профиля.
+    </p>
+    <p class="profile-stub__hint">
+      Войдите в аккаунт, чтобы увидеть статистику и настройки профиля.
+    </p>
+    <a href="/sign-in" class="profile-stub__link">Войти в аккаунт</a>
+  </div>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

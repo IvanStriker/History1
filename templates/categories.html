@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Подборки — Историческая игра{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}" />
+{% endblock %}
+
+{% block body_content %}
+<main class="categories-page">
+
+  <!-- Назад -->
+  <a href="/home" class="cat-back-link">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </svg>
+    На главную
+  </a>
+
+  <!-- Заголовок -->
+  <h1 class="cat-title">Подборки</h1>
+  <div class="cat-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="cat-rule"></div>
+
+  <!-- Заглушка -->
+  <div class="cat-stub">
+    <div class="cat-stub__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+    </div>
+    <p class="cat-stub__text">
+      Тематические подборки карточек появятся здесь совсем скоро.
+    </p>
+    <p class="cat-stub__hint">
+      Этот раздел находится в разработке.
+    </p>
+  </div>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/categories.js') }}"></script>
+{% endblock %}

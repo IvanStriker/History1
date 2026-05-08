@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sign_form.css') }}" />
+{% block sign_head %}{% endblock %}
+{% endblock %}
+
+{% block body_content %}
+<main class="sign-page">
+  <div class="sign-wrapper">
+
+    <!-- Декоративный орнамент -->
+    <div class="sign-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+    <!-- Карточка формы -->
+    <div class="sign-card">
+
+      <!-- Вкладки Вход / Регистрация -->
+      <div class="sign-tabs" role="tablist">
+        <a href="/sign-in"
+           class="sign-tab{% if request.path == '/sign-in' %} sign-tab--active{% endif %}"
+           role="tab"
+           aria-selected="{{ 'true' if request.path == '/sign-in' else 'false' }}">
+          Вход
+        </a>
+        <a href="/sign-up"
+           class="sign-tab{% if request.path == '/sign-up' %} sign-tab--active{% endif %}"
+           role="tab"
+           aria-selected="{{ 'true' if request.path == '/sign-up' else 'false' }}">
+          Регистрация
+        </a>
+      </div>
+
+      <!-- Контент формы (заполняется дочерним шаблоном) -->
+      <div class="sign-body">
+        {% block sign_form_content %}{% endblock %}
+      </div>
+
+    </div>
+
+    <div class="sign-ornament sign-ornament--bottom" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/sign_form.js') }}"></script>
+{% block sign_scripts %}{% endblock %}
+{% endblock %}

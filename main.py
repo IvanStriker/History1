@@ -36,6 +36,13 @@ def create_app() -> Flask:
     with app.app_context():
         db_upgrade()
 
+    # ── Контекстный процессор (доступен во всех шаблонах) ────────────────────
+
+    @app.context_processor
+    def inject_globals():
+        """Передаёт current_user во все шаблоны. Пока заглушка — None."""
+        return dict(current_user=None)
+
     # ── Маршруты ──────────────────────────────────────────────────────────────
 
     @app.route("/")
@@ -173,6 +180,22 @@ def create_app() -> Flask:
             "front": front,
             "back": back,
         })
+
+    @app.route("/categories")
+    def categories():
+        return render_template("categories.html")
+
+    @app.route("/sign-in", methods=["GET", "POST"])
+    def sign_in():
+        return render_template("sign_in.html")
+
+    @app.route("/sign-up", methods=["GET", "POST"])
+    def sign_up():
+        return render_template("sign_up.html")
+
+    @app.route("/profile")
+    def profile():
+        return render_template("profile.html")
 
     # ── Обработчики ошибок ────────────────────────────────────────────────────
 

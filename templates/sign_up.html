@@ -1,0 +1,77 @@
+{% extends 'sign_form.html' %}
+
+{% block title %}Регистрация — Историческая игра{% endblock %}
+
+{% block sign_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sign_up.css') }}" />
+{% endblock %}
+
+{% block sign_form_content %}
+<form class="sign-form" method="POST" action="/sign-up">
+
+  <div class="sign-field">
+    <label class="sign-label" for="reg-username">Имя пользователя</label>
+    <input
+      type="text"
+      id="reg-username"
+      name="username"
+      class="sign-input"
+      placeholder="Придумайте имя"
+      autocomplete="username"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <div class="sign-field">
+    <label class="sign-label" for="reg-email">Электронная почта</label>
+    <input
+      type="email"
+      id="reg-email"
+      name="email"
+      class="sign-input"
+      placeholder="example@mail.ru"
+      autocomplete="email"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <div class="sign-field">
+    <label class="sign-label" for="reg-password">Пароль</label>
+    <input
+      type="password"
+      id="reg-password"
+      name="password"
+      class="sign-input"
+      placeholder="Не менее 8 символов"
+      autocomplete="new-password"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <div class="sign-field">
+    <label class="sign-label" for="reg-confirm">Подтверждение пароля</label>
+    <input
+      type="password"
+      id="reg-confirm"
+      name="confirm_password"
+      class="sign-input"
+      placeholder="Повторите пароль"
+      autocomplete="new-password"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <button type="submit" class="btn-sign btn-sign-up">
+    Зарегистрироваться
+  </button>
+
+</form>
+{% endblock %}
+
+{% block sign_scripts %}
+<script src="{{ url_for('static', filename='js/sign_up.js') }}"></script>
+{% endblock %}

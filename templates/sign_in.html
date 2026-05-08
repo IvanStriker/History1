@@ -1,0 +1,49 @@
+{% extends 'sign_form.html' %}
+
+{% block title %}Вход — Историческая игра{% endblock %}
+
+{% block sign_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sign_in.css') }}" />
+{% endblock %}
+
+{% block sign_form_content %}
+<form class="sign-form" method="POST" action="/sign-in">
+
+  <div class="sign-field">
+    <label class="sign-label" for="login-email">Электронная почта</label>
+    <input
+      type="email"
+      id="login-email"
+      name="email"
+      class="sign-input"
+      placeholder="example@mail.ru"
+      autocomplete="email"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <div class="sign-field">
+    <label class="sign-label" for="login-password">Пароль</label>
+    <input
+      type="password"
+      id="login-password"
+      name="password"
+      class="sign-input"
+      placeholder="Введите пароль"
+      autocomplete="current-password"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <button type="submit" class="btn-sign btn-sign-in">
+    Войти
+  </button>
+
+</form>
+{% endblock %}
+
+{% block sign_scripts %}
+<script src="{{ url_for('static', filename='js/sign_in.js') }}"></script>
+{% endblock %}

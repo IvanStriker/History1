@@ -1,0 +1,6 @@
+/* sign_in.css — стили, специфичные для страницы входа */
+
+/* Дополнительное оформление кнопки входа */
+.btn-sign-in {
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold-primary));
+}
