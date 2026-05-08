@@ -1,3 +1,6 @@
 .venv/
 pgdata/
 .env
+certbot/
+__pycache__/
+*.pyc

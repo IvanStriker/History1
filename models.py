@@ -7,6 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
+# ── Карточки ─────────────────────────────────────────────────────────────────
+
 class Card(db.Model):
     __tablename__ = "cards"
 
@@ -33,3 +35,60 @@ class Card(db.Model):
 
     def __repr__(self) -> str:
         return f"<Card id={self.id} category={self.category!r}>"
+
+
+# ── Пользователи ─────────────────────────────────────────────────────────────
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id             = db.Column(db.Integer, primary_key=True)
+    first_name     = db.Column(db.Text,    nullable=False)          # len > 0
+    last_name      = db.Column(db.Text,    nullable=False)          # len > 0
+    username       = db.Column(db.Text,    nullable=False, unique=True)  # len > 0
+    email          = db.Column(db.Text,    nullable=False, unique=True)
+    password       = db.Column(db.Text,    nullable=False)          # bcrypt-хэш
+    bio            = db.Column(db.Text,    nullable=True)           # len >= 0
+    text_size      = db.Column(db.Float,   nullable=True)           # px, напр. 16.0
+    heading_scale  = db.Column(db.Float,   nullable=True)           # %, напр. 100.0
+
+    categories = db.relationship("Category", back_populates="creator",
+                                 lazy="dynamic", cascade="all, delete-orphan")
+
+    def __repr__(self) -> str:
+        return f"<User id={self.id} username={self.username!r}>"
+
+
+# ── Тематические подборки ─────────────────────────────────────────────────────
+
+class Category(db.Model):
+    __tablename__ = "categories"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    name        = db.Column(db.Text,    nullable=False)   # len > 0
+    description = db.Column(db.Text,    nullable=False)   # len > 0
+    creator_id  = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    creator      = db.relationship("User",         back_populates="categories")
+    card_entries = db.relationship("CategoryCard", back_populates="category",
+                                   lazy="dynamic", cascade="all, delete-orphan")
+
+    def __repr__(self) -> str:
+        return f"<Category id={self.id} name={self.name!r}>"
+
+
+# ── Связь подборка ↔ карточка ─────────────────────────────────────────────────
+
+class CategoryCard(db.Model):
+    __tablename__ = "category_cards"
+
+    id          = db.Column(db.Integer, primary_key=True)
+    card_id     = db.Column(db.Integer, db.ForeignKey("cards.id"),      nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=False)
+
+    card     = db.relationship("Card",     foreign_keys=[card_id])
+    category = db.relationship("Category", back_populates="card_entries",
+                                foreign_keys=[category_id])
+
+    def __repr__(self) -> str:
+        return f"<CategoryCard card={self.card_id} cat={self.category_id}>"

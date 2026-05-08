@@ -10,6 +10,34 @@
 <form class="sign-form" method="POST" action="/sign-up">
 
   <div class="sign-field">
+    <label class="sign-label" for="reg-first-name">Имя</label>
+    <input
+      type="text"
+      id="reg-first-name"
+      name="first_name"
+      class="sign-input"
+      placeholder="Ваше имя"
+      autocomplete="given-name"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <div class="sign-field">
+    <label class="sign-label" for="reg-last-name">Фамилия</label>
+    <input
+      type="text"
+      id="reg-last-name"
+      name="last_name"
+      class="sign-input"
+      placeholder="Ваша фамилия"
+      autocomplete="family-name"
+      required
+      aria-required="true"
+    />
+  </div>
+
+  <div class="sign-field">
     <label class="sign-label" for="reg-username">Имя пользователя</label>
     <input
       type="text"
@@ -63,6 +91,19 @@
       required
       aria-required="true"
     />
+  </div>
+
+  <div class="sign-field">
+    <label class="sign-label" for="reg-bio">
+      О себе <span class="sign-label--optional">(необязательно)</span>
+    </label>
+    <textarea
+      id="reg-bio"
+      name="bio"
+      class="sign-input sign-textarea"
+      placeholder="Расскажите немного о себе..."
+      rows="3"
+    ></textarea>
   </div>
 
   <button type="submit" class="btn-sign btn-sign-up">

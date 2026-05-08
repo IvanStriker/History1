@@ -13,7 +13,31 @@
   <div class="profile-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
   <div class="profile-rule"></div>
 
-  <!-- Заглушка профиля -->
+  {% if current_user %}
+
+  <div class="profile-card">
+    <div class="profile-avatar" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+    </div>
+
+    <div class="profile-info">
+      <p class="profile-name">{{ current_user.first_name }} {{ current_user.last_name }}</p>
+      <p class="profile-username">@{{ current_user.username }}</p>
+      <p class="profile-email">{{ current_user.email }}</p>
+      {% if current_user.bio %}
+      <p class="profile-bio">{{ current_user.bio }}</p>
+      {% endif %}
+    </div>
+
+    <form method="POST" action="/logout" class="profile-logout">
+      <button type="submit" class="btn-logout">Выйти</button>
+    </form>
+  </div>
+
+  {% else %}
+
   <div class="profile-stub">
     <div class="profile-stub__avatar" aria-hidden="true">
       <svg viewBox="0 0 24 24">
@@ -28,6 +52,8 @@
     </p>
     <a href="/sign-in" class="profile-stub__link">Войти в аккаунт</a>
   </div>
+
+  {% endif %}
 
 </main>
 {% endblock %}

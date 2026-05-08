@@ -178,6 +178,42 @@ body::before {
   transform: translateY(0);
 }
 
+/* ── Textarea ─────────────────────────────── */
+.sign-textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+/* ── Необязательная метка ─────────────────── */
+.sign-label--optional {
+  font-size: 0.8rem;
+  color: var(--parchment-dim);
+  opacity: 0.6;
+}
+
+/* ── Flash-сообщения ──────────────────────── */
+.sign-flash {
+  list-style: none;
+  padding: 0.9rem 1.4rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+.sign-flash__item {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 0.25rem 0;
+}
+
+.sign-flash__item--error {
+  color: #e07070;
+}
+
+.sign-flash__item--success {
+  color: var(--gold-primary);
+}
+
 /* ── Адаптив ──────────────────────────────── */
 @media (max-width: 480px) {
   .sign-body { padding: 1.5rem 1.2rem 2rem; }

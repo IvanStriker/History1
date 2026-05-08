@@ -31,6 +31,17 @@
         </a>
       </div>
 
+      <!-- Flash-сообщения -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="sign-flash">
+            {% for category, message in messages %}
+            <li class="sign-flash__item sign-flash__item--{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
       <!-- Контент формы (заполняется дочерним шаблоном) -->
       <div class="sign-body">
         {% block sign_form_content %}{% endblock %}

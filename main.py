@@ -7,17 +7,18 @@ app.py — Flask-приложение
 Переменные окружения:
   DATABASE_URL  — строка подключения к PostgreSQL
                   Пример: postgresql://user:pass@localhost:5432/chronos
+  SECRET_KEY    — секрет для Flask-сессий
 """
 
 import os
 import uuid
 from random import sample
-import base64
 
-from flask import Flask, abort, jsonify, render_template, request, url_for
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_migrate import Migrate, upgrade as db_upgrade
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import Card, db
+from models import Card, User, db
 
 
 def create_app() -> Flask:
@@ -26,9 +27,10 @@ def create_app() -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"]        = os.environ["DATABASE_URL"]
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SQLALCHEMY_ENGINE_OPTIONS"]      = {
-        "pool_pre_ping": True,   # проверка живости соединения перед каждым запросом
-        "pool_recycle":  1800,   # переоткрывать соединения каждые 30 минут
+        "pool_pre_ping": True,
+        "pool_recycle":  1800,
     }
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
     db.init_app(app)
     Migrate(app, db)
@@ -40,24 +42,17 @@ def create_app() -> Flask:
 
     @app.context_processor
     def inject_globals():
-        """Передаёт current_user во все шаблоны. Пока заглушка — None."""
-        return dict(current_user=None)
+        user = None
+        user_id = session.get("user_id")
+        if user_id:
+            user = db.session.get(User, user_id)
+        return dict(current_user=user)
 
     # ── Маршруты ──────────────────────────────────────────────────────────────
 
     @app.route("/")
     @app.route("/home")
     def index():
-        """
-        Главная страница.
-
-        Jinja2-параметры:
-          site_title        — str       : название сайта
-          site_subtitle     — str       : подзаголовок
-          site_description  — str       : описание проекта
-          total_cards_count — int       : число карточек в БД
-          categories        — list[str] : уникальные категории (эпохи)
-        """
         total      = db.session.query(Card).count()
         categories = [
             row[0]
@@ -108,14 +103,6 @@ def create_app() -> Flask:
 
     @app.route("/train")
     def train():
-        """
-        Страница тренировки.
-
-        Jinja2-параметры:
-          card_indices    — list[int] : случайный список id карточек
-          total_questions — int       : количество вопросов
-          session_id      — str       : UUID сессии
-        """
         TRAIN_SIZE = 10
 
         all_ids: list[int] = [
@@ -133,19 +120,6 @@ def create_app() -> Flask:
 
     @app.route("/card")
     def get_card():
-        """
-        REST-эндпоинт карточки.
-
-        Query-параметры:
-          id (int)
-
-        Ответ:
-          {
-            "id": int,
-            "front": { "type": "text|image", "content": str },
-            "back": { ... }
-          }
-        """
         card_id = request.args.get("id", type=int)
         if card_id is None:
             abort(400, description="Параметр 'id' обязателен и должен быть целым числом.")
@@ -154,7 +128,6 @@ def create_app() -> Flask:
         if card is None:
             abort(404, description=f"Карточка с id={card_id} не найдена.")
 
-        # ── FRONT ─────────────────────────────────────────────
         if getattr(card, "front_type", "text") == "image":
             image_path = card.front_content
 
@@ -172,7 +145,6 @@ def create_app() -> Flask:
                 "content": card.front_content,
             }
 
-        # ── BACK (без изменений логики, можно аналогично расширить при необходимости) ──
         back = card.to_json().get("back") if hasattr(card, "to_json") else {}
 
         return jsonify({
@@ -187,11 +159,77 @@ def create_app() -> Flask:
 
     @app.route("/sign-in", methods=["GET", "POST"])
     def sign_in():
+        if request.method == "POST":
+            username = request.form.get("username", "").strip()
+            password = request.form.get("password", "")
+
+            if not username or not password:
+                flash("Введите имя пользователя и пароль.", "error")
+                return render_template("sign_in.html")
+
+            user: User | None = User.query.filter_by(username=username).first()
+            if user is None or not check_password_hash(user.password, password):
+                flash("Неверное имя пользователя или пароль.", "error")
+                return render_template("sign_in.html")
+
+            session.clear()
+            session["user_id"] = user.id
+            return redirect(url_for("profile"))
+
         return render_template("sign_in.html")
 
     @app.route("/sign-up", methods=["GET", "POST"])
     def sign_up():
+        if request.method == "POST":
+            first_name       = request.form.get("first_name", "").strip()
+            last_name        = request.form.get("last_name", "").strip()
+            username         = request.form.get("username", "").strip()
+            email            = request.form.get("email", "").strip()
+            password         = request.form.get("password", "")
+            confirm_password = request.form.get("confirm_password", "")
+            bio              = request.form.get("bio", "").strip()
+
+            if not all([first_name, last_name, username, email, password]):
+                flash("Все обязательные поля должны быть заполнены.", "error")
+                return render_template("sign_up.html")
+
+            if len(password) < 8:
+                flash("Пароль должен содержать не менее 8 символов.", "error")
+                return render_template("sign_up.html")
+
+            if password != confirm_password:
+                flash("Пароли не совпадают.", "error")
+                return render_template("sign_up.html")
+
+            if User.query.filter_by(username=username).first():
+                flash("Имя пользователя уже занято.", "error")
+                return render_template("sign_up.html")
+
+            if User.query.filter_by(email=email).first():
+                flash("Эта почта уже зарегистрирована.", "error")
+                return render_template("sign_up.html")
+
+            user = User(
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                email=email,
+                password=generate_password_hash(password),
+                bio=bio or None,
+            )
+            db.session.add(user)
+            db.session.commit()
+
+            session.clear()
+            session["user_id"] = user.id
+            return redirect(url_for("profile"))
+
         return render_template("sign_up.html")
+
+    @app.route("/logout", methods=["POST"])
+    def logout():
+        session.clear()
+        return redirect(url_for("index"))
 
     @app.route("/profile")
     def profile():

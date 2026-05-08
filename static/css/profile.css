@@ -129,6 +129,90 @@ body::before {
   background: var(--gold-glow);
 }
 
+/* ── Карточка профиля (авторизованный пользователь) ── */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 4px;
+  padding: 3rem 2rem;
+  background: rgba(201, 168, 76, 0.03);
+}
+
+.profile-avatar svg {
+  width: 72px;
+  height: 72px;
+  fill: var(--gold-primary);
+  opacity: 0.75;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.profile-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--gold-primary);
+  letter-spacing: 0.06em;
+}
+
+.profile-username {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--parchment-dim);
+  letter-spacing: 0.03em;
+}
+
+.profile-email {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--parchment-dim);
+  opacity: 0.7;
+}
+
+.profile-bio {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--parchment);
+  opacity: 0.8;
+  margin-top: 0.5rem;
+  line-height: 1.6;
+}
+
+.profile-logout {
+  margin-top: 0.5rem;
+}
+
+.btn-logout {
+  padding: 0.55rem 2rem;
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  color: var(--parchment-dim);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.btn-logout:hover {
+  color: #e07070;
+  border-color: #e07070;
+  background: rgba(224, 112, 112, 0.06);
+}
+
 @media (max-width: 520px) {
-  .profile-stub { padding: 2rem 1.2rem; }
+  .profile-stub  { padding: 2rem 1.2rem; }
+  .profile-card  { padding: 2rem 1.2rem; }
 }
