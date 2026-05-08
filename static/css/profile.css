@@ -120,13 +120,13 @@ body::before {
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   text-decoration: none;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  transition: color 0.25s, border-color 0.25s, box-shadow 0.3s;
 }
 
 .profile-stub__link:hover {
   color: var(--gold-primary);
   border-color: var(--gold-primary);
-  background: var(--gold-glow);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.25), 0 0 50px rgba(201, 168, 76, 0.08);
 }
 
 /* ── Карточка профиля (авторизованный пользователь) ── */
@@ -203,13 +203,13 @@ body::before {
   font-size: 0.72rem;
   letter-spacing: 0.1em;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  transition: color 0.25s, border-color 0.25s, box-shadow 0.3s;
 }
 
 .btn-logout:hover {
   color: #e07070;
   border-color: #e07070;
-  background: rgba(224, 112, 112, 0.06);
+  box-shadow: 0 0 20px rgba(224, 112, 112, 0.25), 0 0 50px rgba(224, 112, 112, 0.08);
 }
 
 @media (max-width: 520px) {

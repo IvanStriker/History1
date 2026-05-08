@@ -235,12 +235,12 @@ body::before {
   font-size: 0.95rem;
   padding: 0.55rem 1.8rem;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  transition: color 0.25s, border-color 0.25s, box-shadow 0.3s;
 }
 .btn-reset:hover {
   color: var(--gold-primary);
   border-color: var(--gold-primary);
-  background: var(--gold-glow);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.25), 0 0 50px rgba(201, 168, 76, 0.08);
 }
 
 /* ── Адаптив ──────────────────────────────── */

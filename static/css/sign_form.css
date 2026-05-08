@@ -165,17 +165,12 @@ body::before {
   font-size: 0.78rem;
   letter-spacing: 0.12em;
   cursor: pointer;
-  transition: opacity 0.25s, transform 0.15s;
+  transition: box-shadow 0.3s;
   margin-top: 0.4rem;
 }
 
 .btn-sign:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
-}
-
-.btn-sign:active {
-  transform: translateY(0);
+  box-shadow: 0 0 28px rgba(201, 168, 76, 0.45), 0 0 60px rgba(201, 168, 76, 0.15);
 }
 
 /* ── Textarea ─────────────────────────────── */
