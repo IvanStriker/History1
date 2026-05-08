@@ -20,6 +20,8 @@
   updateDisplay();
 
   /* Слушатели */
+
+  /* input — только живой предпросмотр, без сохранения на сервер */
   textSizeSlider.addEventListener('input', function () {
     textSize = parseFloat(this.value);
     localStorage.setItem('setting_text_size', textSize);
@@ -32,6 +34,15 @@
     apply();
   });
 
+  /* change — срабатывает один раз при отпускании ползунка */
+  textSizeSlider.addEventListener('change', function () {
+    saveToServer();
+  });
+
+  headingSlider.addEventListener('change', function () {
+    saveToServer();
+  });
+
   resetBtn.addEventListener('click', function () {
     textSize     = DEFAULTS.textSize;
     headingScale = DEFAULTS.headingScale;
@@ -40,6 +51,7 @@
     textSizeSlider.value = textSize;
     headingSlider.value  = Math.round(headingScale * 100);
     apply();
+    saveToServer();
   });
 
   function apply() {
@@ -51,6 +63,15 @@
     }
 
     updateDisplay();
+  }
+
+  function saveToServer() {
+    fetch('/api/settings', {
+      method: 'POST',
+      keepalive: true,
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ text_size: textSize, heading_scale: headingScale })
+    }).catch(function() {});
   }
 
   function updateDisplay() {

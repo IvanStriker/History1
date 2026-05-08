@@ -19,6 +19,9 @@ class Card(db.Model):
     back_type     = db.Column(db.Text,        nullable=False, default="text")
     back_content  = db.Column(db.Text,        nullable=False)
     answer_text   = db.Column(db.Text,        nullable=False)
+    user_id       = db.Column(db.Integer,     db.ForeignKey("users.id"), nullable=True)
+
+    creator = db.relationship("User", backref=db.backref("owned_cards", lazy="dynamic"))
 
     def front_dict(self) -> dict:
         return {"type": self.front_type, "content": self.front_content}
@@ -45,12 +48,12 @@ class User(db.Model):
     id             = db.Column(db.Integer, primary_key=True)
     first_name     = db.Column(db.Text,    nullable=False)          # len > 0
     last_name      = db.Column(db.Text,    nullable=False)          # len > 0
-    username       = db.Column(db.Text,    nullable=False, unique=True)  # len > 0
-    email          = db.Column(db.Text,    nullable=False, unique=True)
+    username       = db.Column(db.Text,    nullable=False)          # len > 0; пара (username+password) уникальна
+    email          = db.Column(db.Text,    nullable=False)
     password       = db.Column(db.Text,    nullable=False)          # bcrypt-хэш
     bio            = db.Column(db.Text,    nullable=True)           # len >= 0
     text_size      = db.Column(db.Float,   nullable=True)           # px, напр. 16.0
-    heading_scale  = db.Column(db.Float,   nullable=True)           # %, напр. 100.0
+    heading_scale  = db.Column(db.Float,   nullable=True)           # коэффициент, напр. 1.0
 
     categories = db.relationship("Category", back_populates="creator",
                                  lazy="dynamic", cascade="all, delete-orphan")

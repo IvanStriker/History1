@@ -17,6 +17,14 @@
     rel="stylesheet"
   />
 
+  <!-- Синхронизируем настройки из БД → localStorage (для авторизованных пользователей) -->
+  {% if current_user %}
+  <script>
+    localStorage.setItem('setting_text_size',    {{ current_user.text_size    or 16  }});
+    localStorage.setItem('setting_heading_scale', {{ current_user.heading_scale or 1.0 }});
+  </script>
+  {% endif %}
+
   <!-- Применяем сохранённые настройки ДО рендера страницы (предотвращает FOUC) -->
   <script src="{{ url_for('static', filename='js/settings-apply.js') }}"></script>
 

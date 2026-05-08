@@ -80,6 +80,19 @@ def create_app() -> Flask:
     def settings():
         return render_template("settings.html")
 
+    @app.route("/api/settings", methods=["POST"])
+    def api_save_settings():
+        if "user_id" not in session:
+            return jsonify({"ok": False}), 401
+        data = request.get_json(silent=True) or {}
+        user = db.session.get(User, session["user_id"])
+        if not user:
+            return jsonify({"ok": False}), 404
+        if "text_size"     in data: user.text_size     = float(data["text_size"])
+        if "heading_scale" in data: user.heading_scale = float(data["heading_scale"])
+        db.session.commit()
+        return jsonify({"ok": True})
+
     @app.route("/cards")
     def cards_page():
         all_cards = db.session.query(Card).order_by(Card.id).all()
@@ -201,13 +214,10 @@ def create_app() -> Flask:
                 flash("Пароли не совпадают.", "error")
                 return render_template("sign_up.html")
 
-            if User.query.filter_by(username=username).first():
-                flash("Имя пользователя уже занято.", "error")
-                return render_template("sign_up.html")
-
-            if User.query.filter_by(email=email).first():
-                flash("Эта почта уже зарегистрирована.", "error")
-                return render_template("sign_up.html")
+            for u in User.query.filter_by(username=username).all():
+                if check_password_hash(u.password, password):
+                    flash("Пользователь с таким именем и паролем уже существует.", "error")
+                    return render_template("sign_up.html")
 
             user = User(
                 first_name=first_name,
