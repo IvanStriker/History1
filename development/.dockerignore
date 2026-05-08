@@ -1,0 +1,8 @@
+.venv/
+pgdata/
+development/pgdata/
+development/.venv/
+.env
+certbot/
+__pycache__/
+*.pyc
