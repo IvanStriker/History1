@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Все карточки — Историческая игра</title>
+
+  <!-- Bootstrap 5 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  />
+
+  <!-- Google Fonts: Cinzel Decorative + EB Garamond -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cards.css') }}" />
+</head>
+<body>
+
+  <!-- Шапка -->
+  <header class="cards-header">
+    <a href="/home" class="cards-header__back">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      На главную
+    </a>
+    <h1 class="cards-header__title">Все карточки</h1>
+    <span class="cards-header__count">{{ cards | length }}&nbsp;шт.</span>
+  </header>
+
+  <!-- Список карточек -->
+  <main class="cards-main">
+    <div class="container-fluid px-0">
+
+      {% for card in cards %}
+      <div class="card-row" id="card-{{ card.id }}">
+
+        <!-- Порядковый номер -->
+        <span class="card-row__num">{{ loop.index }}</span>
+
+        <!-- Лицевая сторона (вопрос) -->
+        <div class="card-face card-face--front">
+          <div class="card-face__label">Вопрос</div>
+          <div class="card-face__content">
+            {% if card.front_type == 'image' %}
+              <img
+                src="{{ card.front_content }}"
+                alt="Карточка {{ card.id }}"
+                class="card-face__img"
+              />
+            {% else %}
+              <p class="card-face__text">{{ card.front_content }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Тыльная сторона (ответ) -->
+        <div class="card-face card-face--back">
+          <div class="card-face__label">Ответ</div>
+          <div class="card-face__content">
+            {% if card.back_type == 'image' %}
+              <img
+                src="{{ card.back_content }}"
+                alt="Ответ {{ card.id }}"
+                class="card-face__img"
+              />
+            {% else %}
+              <p class="card-face__text">{{ card.back_content }}</p>
+            {% endif %}
+            <div class="card-face__answer">{{ card.answer_text }}</div>
+          </div>
+        </div>
+
+      </div>
+      {% endfor %}
+
+    </div>
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
