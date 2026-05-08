@@ -92,6 +92,21 @@ body::before {
   white-space: nowrap;
 }
 
+.cards-header__settings {
+  display: flex;
+  align-items: center;
+  color: var(--gold-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+.cards-header__settings:hover { color: var(--gold-primary); }
+.cards-header__settings svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
 /* ── Main ────────────────────────────────── */
 .cards-main {
   position: relative;

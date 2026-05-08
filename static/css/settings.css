@@ -1,0 +1,250 @@
+/* ═══════════════════════════════════════════
+   settings.css — Страница настроек
+   ═══════════════════════════════════════════ */
+
+:root {
+  --bg-base:      #080604;
+  --bg-surface:   #100d08;
+  --bg-panel:     #130f09;
+  --gold-primary: #c9a84c;
+  --gold-dim:     #8b6914;
+  --gold-glow:    rgba(201, 168, 76, 0.14);
+  --parchment:    #e8d5a3;
+  --parchment-dim:#b8a07a;
+
+  --font-display: 'Cinzel Decorative', serif;
+  --font-body:    'EB Garamond', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  background-color: var(--bg-base);
+  color: var(--parchment);
+  font-family: var(--font-body);
+}
+
+/* Grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ── Обёртка страницы ─────────────────────── */
+.settings-page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1.5rem 4rem;
+}
+
+/* ── Назад ────────────────────────────────── */
+.back-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--parchment-dim);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  margin-bottom: 2.5rem;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--gold-primary); }
+.back-link svg {
+  width: 18px; height: 18px;
+  fill: currentColor; flex-shrink: 0;
+}
+
+/* ── Заголовок страницы ───────────────────── */
+.settings-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--gold-primary);
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.35);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.settings-ornament {
+  font-size: 0.9rem;
+  letter-spacing: 0.6em;
+  color: var(--gold-primary);
+  opacity: 0.5;
+  margin-bottom: 0.8rem;
+}
+
+.settings-rule {
+  width: 100%;
+  max-width: 420px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 30%, var(--gold-primary) 50%, var(--gold-dim) 70%, transparent);
+  margin-bottom: 2.8rem;
+}
+
+/* ── Панель настроек ──────────────────────── */
+.settings-panel {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-panel);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 4px;
+  padding: 2rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+}
+
+/* ── Секция одного параметра ──────────────── */
+.settings-section {}
+
+.settings-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.9rem;
+}
+
+.settings-label {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--parchment);
+  letter-spacing: 0.04em;
+}
+
+.settings-value {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--gold-primary);
+  letter-spacing: 0.06em;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── Слайдер ──────────────────────────────── */
+.settings-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--gold-primary) 0%,
+    var(--gold-primary) var(--pct, 50%),
+    rgba(201, 168, 76, 0.2) var(--pct, 50%),
+    rgba(201, 168, 76, 0.2) 100%
+  );
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.settings-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--gold-primary);
+  border: 2px solid var(--bg-base);
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.settings-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 16px rgba(201, 168, 76, 0.7);
+}
+.settings-slider::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--gold-primary);
+  border: 2px solid var(--bg-base);
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
+  cursor: pointer;
+}
+.settings-slider::-moz-range-track {
+  height: 3px;
+  background: rgba(201, 168, 76, 0.2);
+  border-radius: 2px;
+}
+
+.settings-hint {
+  margin-top: 0.45rem;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--parchment-dim);
+  opacity: 0.7;
+}
+
+/* ── Предпросмотр ─────────────────────────── */
+.settings-preview {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 2rem;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 4px;
+  padding: 1.6rem 2rem;
+  background: rgba(201, 168, 76, 0.03);
+}
+
+.preview-label {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.preview-heading {
+  font-family: var(--font-display);
+  color: var(--gold-primary);
+  line-height: 1.2;
+  margin-bottom: 0.7rem;
+}
+
+.preview-text {
+  font-family: var(--font-body);
+  color: var(--parchment-dim);
+  line-height: 1.75;
+}
+
+/* ── Кнопка сброса ────────────────────────── */
+.btn-reset {
+  margin-top: 2rem;
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  color: var(--parchment-dim);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.95rem;
+  padding: 0.55rem 1.8rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.btn-reset:hover {
+  color: var(--gold-primary);
+  border-color: var(--gold-primary);
+  background: var(--gold-glow);
+}
+
+/* ── Адаптив ──────────────────────────────── */
+@media (max-width: 520px) {
+  .settings-panel { padding: 1.4rem 1.2rem; }
+  .settings-preview { padding: 1.2rem 1.2rem; }
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Настройки — Историческая игра</title>
+
+  <!-- Bootstrap 5 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Применяем сохранённые настройки ДО рендера страницы -->
+  <script src="{{ url_for('static', filename='js/settings-apply.js') }}"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}" />
+</head>
+<body>
+
+  <main class="settings-page">
+
+    <!-- Назад -->
+    <a href="/home" class="back-link">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      На главную
+    </a>
+
+    <!-- Заголовок -->
+    <h1 class="settings-title">Настройки</h1>
+    <div class="settings-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+    <div class="settings-rule"></div>
+
+    <!-- Панель управления -->
+    <div class="settings-panel" role="form" aria-label="Настройки шрифта">
+
+      <!-- Размер основного текста -->
+      <section class="settings-section">
+        <div class="settings-label-row">
+          <label class="settings-label" for="text-size">Основной текст</label>
+          <span class="settings-value" id="text-size-val" aria-live="polite">16 px</span>
+        </div>
+        <input
+          type="range"
+          class="settings-slider"
+          id="text-size"
+          min="12" max="22" step="1" value="16"
+          aria-label="Размер основного текста"
+        />
+        <p class="settings-hint">Влияет на весь текст: описания, кнопки, поля ввода.</p>
+      </section>
+
+      <!-- Размер заголовков -->
+      <section class="settings-section">
+        <div class="settings-label-row">
+          <label class="settings-label" for="heading-scale">Заголовки</label>
+          <span class="settings-value" id="heading-scale-val" aria-live="polite">100%</span>
+        </div>
+        <input
+          type="range"
+          class="settings-slider"
+          id="heading-scale"
+          min="70" max="150" step="5" value="100"
+          aria-label="Масштаб заголовков"
+        />
+        <p class="settings-hint">Дополнительный масштаб заголовков относительно основного текста.</p>
+      </section>
+
+    </div>
+
+    <!-- Предпросмотр -->
+    <div class="settings-preview" aria-label="Предпросмотр">
+      <div class="preview-label">Предпросмотр</div>
+      <h2 class="preview-heading" id="preview-heading">Пример заголовка</h2>
+      <p class="preview-text" id="preview-text">
+        Пример основного текста. Здесь отображаются описания
+        карточек, подсказки и другой контент страниц.
+      </p>
+    </div>
+
+    <!-- Сброс -->
+    <button class="btn-reset" id="reset-btn" type="button">
+      Сбросить по умолчанию
+    </button>
+
+  </main>
+
+  <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+</body>
+</html>

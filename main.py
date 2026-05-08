@@ -74,6 +74,10 @@ def create_app() -> Flask:
             categories=categories,
         )
 
+    @app.route("/settings")
+    def settings():
+        return render_template("settings.html")
+
     @app.route("/cards")
     def cards_page():
         all_cards = db.session.query(Card).order_by(Card.id).all()
