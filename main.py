@@ -234,7 +234,16 @@ def create_app() -> Flask:
 
     @app.route("/categories")
     def categories():
-        return render_template("categories.html")
+        """Страница со всеми подборками (для всех пользователей)"""
+        all_categories = db.session.query(Category)\
+            .order_by(Category.id.desc())\
+            .all()
+
+        return render_template(
+            "categories.html", 
+            categories=all_categories, 
+            title="Все подборки"
+        )
 
     @app.route("/sign-in", methods=["GET", "POST"])
     def sign_in():

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Подборки — Историческая игра{% endblock %}
+{% block title %}{{ title|default('Подборки — Историческая игра') }}{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}?v=3" />
 {% endblock %}
 
 {% block body_content %}
@@ -18,10 +18,33 @@
   </a>
 
   <!-- Заголовок -->
-  <h1 class="cat-title">Подборки</h1>
+  <h1 class="cat-title">{{ title|default('Подборки') }}</h1>
   <div class="cat-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
   <div class="cat-rule"></div>
 
+  {% if categories and categories|length > 0 %}
+  <div class="categories-list">
+    {% for category in categories %}
+    <div class="category-card">
+      <div class="category-card__header">
+        <span class="category-card__num">{{ loop.index }}</span>
+        <h2 class="category-card__name">{{ category.name }}</h2>
+      </div>
+      
+      <div class="category-card__body">
+        <p class="category-card__description">{{ category.description }}</p>
+      </div>
+
+      <div class="category-card__footer">
+        <span class="category-card__count">
+          {{ category.card_entries.count() }} карточек
+        </span>
+        <a href="#" class="category-card__view-btn">Открыть подборку</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
   <!-- Заглушка -->
   <div class="cat-stub">
     <div class="cat-stub__icon" aria-hidden="true">
@@ -30,12 +53,14 @@
       </svg>
     </div>
     <p class="cat-stub__text">
-      Тематические подборки карточек появятся здесь совсем скоро.
+      У вас пока нет созданных подборок.
     </p>
     <p class="cat-stub__hint">
-      Этот раздел находится в разработке.
+      Создайте первую подборку, чтобы она появилась здесь.
     </p>
+    <a href="/new_category" class="cat-stub__link">Создать подборку</a>
   </div>
+  {% endif %}
 
 </main>
 {% endblock %}
