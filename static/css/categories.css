@@ -237,6 +237,20 @@ body::before {
   border-color: var(--gold-primary);
 }
 
+.category-edit-btn {
+  margin-left: auto;
+  font-size: 1.4rem;
+  color: var(--gold-dim);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.category-edit-btn:hover {
+  color: var(--gold-primary);
+  opacity: 1;
+}
+
 @media (max-width: 520px) {
   .cat-stub { padding: 2rem 1.2rem; }
   .category-card { padding: 1.4rem; }

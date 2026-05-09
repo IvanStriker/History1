@@ -202,6 +202,45 @@ body::before {
   margin-top: auto;
 }
 
+/* Иконка редактирования каждой карточки */
+.card-row {
+  position: relative; /* Важно для абсолютного позиционирования */
+}
+
+.card-edit-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 1.4rem;
+  color: var(--gold-dim);
+  text-decoration: none;
+  z-index: 10;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(8, 6, 4, 0.7);
+  transition: all 0.25s ease;
+  line-height: 1;
+}
+
+.card-edit-btn:hover {
+  color: var(--gold-primary);
+  background: rgba(8, 6, 4, 0.9);
+  transform: scale(1.15);
+}
+
+/* Кнопка в шапке */
+.cards-header__edit {
+  color: var(--gold-dim);
+  font-size: 1.1rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.cards-header__edit:hover {
+  color: var(--gold-primary);
+}
+
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 768px) {
   .card-row {

@@ -3,7 +3,7 @@
 {% block title %}{{ title|default('Подборки — Историческая игра') }}{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}?v=3" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}?v=4" />
 {% endblock %}
 
 {% block body_content %}
@@ -29,6 +29,14 @@
       <div class="category-card__header">
         <span class="category-card__num">{{ loop.index }}</span>
         <h2 class="category-card__name">{{ category.name }}</h2>
+        
+        {% if current_user and category.creator_id == current_user.id %}
+        <a href="{{ url_for('categories_edit', category_id=category.id) }}" 
+           class="category-edit-btn" 
+           title="Редактировать подборку">
+          ✎
+        </a>
+        {% endif %}
       </div>
       
       <div class="category-card__body">
@@ -53,7 +61,7 @@
       </svg>
     </div>
     <p class="cat-stub__text">
-      У вас пока нет созданных подборок.
+      {{ 'У вас пока нет созданных подборок.' if title and 'Мои' in title else 'Подборки пока отсутствуют.' }}
     </p>
     <p class="cat-stub__hint">
       Создайте первую подборку, чтобы она появилась здесь.

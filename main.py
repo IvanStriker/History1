@@ -127,10 +127,19 @@ def create_app() -> Flask:
                 "back_type":     card.back_type,
                 "back_content":  back_content,
                 "answer_text":   card.answer_text,
+                "user_id":       card.user_id
             })
         return render_template("cards.html", cards=cards_data)
 
-    # ==================== НОВЫЕ РОУТЫ ====================
+    @app.route("/cards/edit/<int:card_id>")
+    def cards_edit(card_id):
+        """Заглушка — редактирование конкретной карточки"""
+        return f"hello, world — редактирование карточки #{card_id}"
+
+    @app.route("/categories/edit/<int:category_id>")
+    def categories_edit(category_id):
+        """Заглушка — редактирование конкретной подборки"""
+        return f"hello, world — редактирование подборки #{category_id}"
 
     @app.route("/cards/mine")
     def cards_mine():
@@ -159,6 +168,7 @@ def create_app() -> Flask:
                 "back_content":  back_content,
                 "answer_text":   card.answer_text,
                 "category":      card.category,
+                "user_id":       card.user_id
             })
 
         return render_template("cards.html", 
