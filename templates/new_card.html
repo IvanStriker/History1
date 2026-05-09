@@ -3,6 +3,7 @@
 {% block item_title_text %}Новая карточка{% endblock %}
 {% block item_heading %}Новая карточка{% endblock %}
 {% block item_action %}/new_card{% endblock %}
+{% block form_enctype %}enctype="multipart/form-data"{% endblock %}
 
 {% block new_item_head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/new_card.css') }}" />
@@ -34,6 +35,11 @@
     </div>
     <textarea class="new-item-textarea" id="front_content" name="front_content"
               rows="3" required placeholder="Введите текст..."></textarea>
+    <div class="card-image-upload" id="front_upload" style="display:none">
+      <input type="file" class="card-file-input" id="front_file" name="front_file"
+             accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml">
+      <img class="card-image-preview" id="front_preview" alt="Предпросмотр" style="display:none">
+    </div>
   </fieldset>
 
   <fieldset class="card-side">
@@ -48,6 +54,11 @@
     </div>
     <textarea class="new-item-textarea" id="back_content" name="back_content"
               rows="3" required placeholder="Введите текст..."></textarea>
+    <div class="card-image-upload" id="back_upload" style="display:none">
+      <input type="file" class="card-file-input" id="back_file" name="back_file"
+             accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml">
+      <img class="card-image-preview" id="back_preview" alt="Предпросмотр" style="display:none">
+    </div>
   </fieldset>
 
   <div class="new-item-field">

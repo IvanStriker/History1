@@ -26,6 +26,8 @@ services:
     environment:
       DATABASE_URL: postgresql://user:pass@db:5432/appdb
       SECRET_KEY: change-me-in-production
+    volumes:
+      - ./static/images:/app/static/images
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
       interval: 10s

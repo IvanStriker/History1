@@ -17,8 +17,24 @@ from random import sample
 from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_migrate import Migrate, upgrade as db_upgrade
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 
 from models import Card, Category, User, db
+
+_ALLOWED_IMAGE_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
+
+def _save_upload(file, side_label):
+    """Save an uploaded image to static/images/. Returns (path, None) or (None, error_str)."""
+    if not file or not file.filename:
+        return None, f"Загрузите изображение для поля «{side_label}»."
+    ext = os.path.splitext(secure_filename(file.filename))[1].lower().lstrip('.')
+    if ext not in _ALLOWED_IMAGE_EXT:
+        return None, f"Недопустимый формат файла для поля «{side_label}» (разрешены: png, jpg, gif, webp, svg)."
+    images_dir = os.path.join('static', 'images')
+    os.makedirs(images_dir, exist_ok=True)
+    filename = f"{uuid.uuid4()}.{ext}"
+    file.save(os.path.join(images_dir, filename))
+    return f"images/{filename}", None
 
 
 def create_app() -> Flask:
@@ -250,15 +266,38 @@ def create_app() -> Flask:
         if "user_id" not in session:
             return redirect(url_for("sign_in"))
         if request.method == "POST":
-            category      = request.form.get("category", "").strip()
-            front_type    = request.form.get("front_type", "text")
-            front_content = request.form.get("front_content", "").strip()
-            back_type     = request.form.get("back_type", "text")
-            back_content  = request.form.get("back_content", "").strip()
-            answer_text   = request.form.get("answer_text", "").strip()
-            if not all([category, front_content, back_content, answer_text]):
-                flash("Все поля обязательны.", "error")
+            category    = request.form.get("category", "").strip()
+            front_type  = request.form.get("front_type", "text")
+            back_type   = request.form.get("back_type", "text")
+            answer_text = request.form.get("answer_text", "").strip()
+
+            if front_type == "image":
+                front_content, err = _save_upload(request.files.get("front_file"), "лицевая сторона")
+                if err:
+                    flash(err, "error")
+                    return redirect(url_for("new_card"))
+            else:
+                front_content = request.form.get("front_content", "").strip()
+
+            if back_type == "image":
+                back_content, err = _save_upload(request.files.get("back_file"), "оборотная сторона")
+                if err:
+                    flash(err, "error")
+                    return redirect(url_for("new_card"))
+            else:
+                back_content = request.form.get("back_content", "").strip()
+
+            errors = []
+            if not category:    errors.append("Укажите категорию.")
+            if not answer_text: errors.append("Укажите краткий ответ.")
+            if front_type == "text" and not front_content:
+                errors.append("Введите текст лицевой стороны.")
+            if back_type == "text" and not back_content:
+                errors.append("Введите текст оборотной стороны.")
+            if errors:
+                flash(" ".join(errors), "error")
                 return redirect(url_for("new_card"))
+
             card = Card(
                 category=category, front_type=front_type, front_content=front_content,
                 back_type=back_type, back_content=back_content, answer_text=answer_text,
@@ -267,6 +306,7 @@ def create_app() -> Flask:
             db.session.add(card)
             db.session.commit()
             return redirect(url_for("cards_page"))
+
         existing_categories = [
             row[0] for row in db.session.query(Card.category).distinct().order_by(Card.category).all()
         ]
