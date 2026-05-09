@@ -25,17 +25,18 @@
   {% if categories and categories|length > 0 %}
   <div class="categories-list">
     {% for category in categories %}
-    <div class="category-card">
+    <div class="category-card" id="category-{{ category.id }}">
       <div class="category-card__header">
         <span class="category-card__num">{{ loop.index }}</span>
         <h2 class="category-card__name">{{ category.name }}</h2>
         
         {% if current_user and category.creator_id == current_user.id %}
-        <a href="{{ url_for('categories_edit', category_id=category.id) }}" 
-           class="category-edit-btn" 
+        <a href="{{ url_for('categories_edit', category_id=category.id) }}"
+           class="category-edit-btn"
            title="Редактировать подборку">
           ✎
         </a>
+        <button class="category-delete-btn" data-id="{{ category.id }}" title="Удалить подборку">✕</button>
         {% endif %}
       </div>
       

@@ -241,6 +241,28 @@ body::before {
   color: var(--gold-primary);
 }
 
+.card-delete-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 1rem;
+  color: var(--parchment-dim);
+  background: rgba(8, 6, 4, 0.7);
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.25s ease;
+  line-height: 1;
+}
+
+.card-delete-btn:hover {
+  color: #e07070;
+  background: rgba(8, 6, 4, 0.9);
+  transform: scale(1.15);
+}
+
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 768px) {
   .card-row {

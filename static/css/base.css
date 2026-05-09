@@ -153,3 +153,76 @@ body:not(.page-train) {
 }
 
 .tab-nav__add-option:hover { color: var(--gold-primary); }
+
+/* ── Диалог подтверждения ────────────────── */
+.confirm-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-overlay--open { display: flex; }
+
+.confirm-modal {
+  background: var(--bg-surface);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 4px;
+  padding: 2rem 2.5rem;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(201, 168, 76, 0.08);
+}
+
+.confirm-modal__text {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--parchment);
+  line-height: 1.6;
+}
+
+.confirm-modal__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.confirm-modal__btn {
+  padding: 0.5rem 1.6rem;
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  background: transparent;
+  transition: color 0.25s, border-color 0.25s, box-shadow 0.3s;
+}
+
+.confirm-modal__btn--confirm {
+  border: 1px solid rgba(224, 112, 112, 0.5);
+  color: var(--parchment-dim);
+}
+
+.confirm-modal__btn--confirm:hover {
+  color: #e07070;
+  border-color: #e07070;
+  box-shadow: 0 0 20px rgba(224, 112, 112, 0.25), 0 0 50px rgba(224, 112, 112, 0.08);
+}
+
+.confirm-modal__btn--cancel {
+  border: 1px solid var(--gold-dim);
+  color: var(--parchment-dim);
+}
+
+.confirm-modal__btn--cancel:hover {
+  color: var(--gold-primary);
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.25), 0 0 50px rgba(201, 168, 76, 0.08);
+}

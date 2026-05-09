@@ -15,7 +15,8 @@
     <label class="new-item-label" for="category">Категория</label>
     <input class="new-item-input" type="text" id="category" name="category"
            list="category-options" autocomplete="off" required
-           placeholder="Введите или выберите категорию">
+           placeholder="Введите или выберите категорию"
+           value="{% block val_category %}{% endblock %}">
     <datalist id="category-options">
       {% for cat in existing_categories %}
       <option value="{{ cat }}">
@@ -27,15 +28,16 @@
     <legend class="new-item-label">Лицевая сторона</legend>
     <div class="card-type-row">
       <label class="card-type-opt">
-        <input type="radio" name="front_type" value="text" checked> Текст
+        <input type="radio" name="front_type" value="text" {% block front_type_text_checked %}checked{% endblock %}> Текст
       </label>
       <label class="card-type-opt">
-        <input type="radio" name="front_type" value="image"> Изображение
+        <input type="radio" name="front_type" value="image" {% block front_type_image_checked %}{% endblock %}> Изображение
       </label>
     </div>
     <textarea class="new-item-textarea" id="front_content" name="front_content"
-              rows="3" required placeholder="Введите текст..."></textarea>
+              rows="3" placeholder="Введите текст...">{% block val_front_content %}{% endblock %}</textarea>
     <div class="card-image-upload" id="front_upload" style="display:none">
+      {% block front_image_current %}{% endblock %}
       <input type="file" class="card-file-input" id="front_file" name="front_file"
              accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml">
       <img class="card-image-preview" id="front_preview" alt="Предпросмотр" style="display:none">
@@ -46,15 +48,16 @@
     <legend class="new-item-label">Оборотная сторона</legend>
     <div class="card-type-row">
       <label class="card-type-opt">
-        <input type="radio" name="back_type" value="text" checked> Текст
+        <input type="radio" name="back_type" value="text" {% block back_type_text_checked %}checked{% endblock %}> Текст
       </label>
       <label class="card-type-opt">
-        <input type="radio" name="back_type" value="image"> Изображение
+        <input type="radio" name="back_type" value="image" {% block back_type_image_checked %}{% endblock %}> Изображение
       </label>
     </div>
     <textarea class="new-item-textarea" id="back_content" name="back_content"
-              rows="3" required placeholder="Введите текст..."></textarea>
+              rows="3" placeholder="Введите текст...">{% block val_back_content %}{% endblock %}</textarea>
     <div class="card-image-upload" id="back_upload" style="display:none">
+      {% block back_image_current %}{% endblock %}
       <input type="file" class="card-file-input" id="back_file" name="back_file"
              accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml">
       <img class="card-image-preview" id="back_preview" alt="Предпросмотр" style="display:none">
@@ -64,7 +67,8 @@
   <div class="new-item-field">
     <label class="new-item-label" for="answer_text">Ответ (краткий)</label>
     <input class="new-item-input" type="text" id="answer_text" name="answer_text"
-           required placeholder="Краткое название / имя">
+           required placeholder="Краткое название / имя"
+           value="{% block val_answer %}{% endblock %}">
   </div>
 
 {% endblock %}

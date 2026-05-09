@@ -62,11 +62,12 @@
 
         <!-- Иконка редактирования справа сверху ТОЛЬКО для своих карточек -->
         {% if current_user and card.user_id == current_user.id %}
-        <a href="{{ url_for('cards_edit', card_id=card.id) }}" 
-           class="card-edit-btn" 
+        <a href="{{ url_for('cards_edit', card_id=card.id) }}"
+           class="card-edit-btn"
            title="Редактировать эту карточку">
           ✎
         </a>
+        <button class="card-delete-btn" data-id="{{ card.id }}" title="Удалить карточку">✕</button>
         {% endif %}
 
       </div>

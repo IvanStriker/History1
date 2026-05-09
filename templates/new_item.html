@@ -26,6 +26,7 @@
 
   <form method="POST" action="{% block item_action %}#{% endblock %}"
         class="new-item-form" {% block form_enctype %}{% endblock %}>
+    {% block hidden_fields %}{% endblock %}
     {% block item_fields %}{% endblock %}
 
     <div class="new-item-actions">

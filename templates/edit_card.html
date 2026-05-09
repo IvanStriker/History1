@@ -1,0 +1,39 @@
+{% extends 'new_card.html' %}
+
+{% block item_title_text %}Редактировать карточку{% endblock %}
+{% block item_heading %}Редактировать карточку{% endblock %}
+{% block item_action %}/cards/edit{% endblock %}
+{% block form_enctype %}enctype="multipart/form-data"{% endblock %}
+
+{% block new_item_head %}{{ super() }}{% endblock %}
+
+{% block hidden_fields %}
+<input type="hidden" name="card_id" value="{{ card.id }}">
+{% endblock %}
+
+{% block val_category %}{{ card.category }}{% endblock %}
+
+{% block front_type_text_checked %}{% if card.front_type == 'text' %}checked{% endif %}{% endblock %}
+{% block front_type_image_checked %}{% if card.front_type == 'image' %}checked{% endif %}{% endblock %}
+{% block val_front_content %}{% if card.front_type == 'text' %}{{ card.front_content }}{% endif %}{% endblock %}
+{% block front_image_current %}
+{% if card.front_type == 'image' %}
+<input type="hidden" id="front_keep" name="front_keep" value="{{ card.front_content }}">
+{% endif %}
+{% endblock %}
+
+{% block back_type_text_checked %}{% if card.back_type == 'text' %}checked{% endif %}{% endblock %}
+{% block back_type_image_checked %}{% if card.back_type == 'image' %}checked{% endif %}{% endblock %}
+{% block val_back_content %}{% if card.back_type == 'text' %}{{ card.back_content }}{% endif %}{% endblock %}
+{% block back_image_current %}
+{% if card.back_type == 'image' %}
+<input type="hidden" id="back_keep" name="back_keep" value="{{ card.back_content }}">
+{% endif %}
+{% endblock %}
+
+{% block val_answer %}{{ card.answer_text }}{% endblock %}
+
+{% block new_item_scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/edit_card.js') }}"></script>
+{% endblock %}

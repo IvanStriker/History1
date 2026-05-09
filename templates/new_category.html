@@ -13,13 +13,14 @@
   <div class="new-item-field">
     <label class="new-item-label" for="name">Название</label>
     <input class="new-item-input" type="text" id="name" name="name"
-           required placeholder="Введите название подборки">
+           required placeholder="Введите название подборки"
+           value="{% block val_name %}{% endblock %}">
   </div>
 
   <div class="new-item-field">
     <label class="new-item-label" for="description">Описание</label>
     <textarea class="new-item-textarea" id="description" name="description"
-              rows="4" required placeholder="Опишите подборку..."></textarea>
+              rows="4" required placeholder="Опишите подборку...">{% block val_description %}{% endblock %}</textarea>
   </div>
 
 {% endblock %}

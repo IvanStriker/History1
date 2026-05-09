@@ -131,15 +131,131 @@ def create_app() -> Flask:
             })
         return render_template("cards.html", cards=cards_data)
 
-    @app.route("/cards/edit/<int:card_id>")
-    def cards_edit(card_id):
-        """Заглушка — редактирование конкретной карточки"""
-        return f"hello, world — редактирование карточки #{card_id}"
+    @app.route("/cards/edit", methods=["GET", "POST"])
+    def cards_edit():
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+        card_id = (request.args if request.method == "GET" else request.form).get("card_id", type=int)
+        if not card_id:
+            abort(400, "Не указан ID карточки.")
+        card = db.session.get(Card, card_id)
+        if not card:
+            abort(404, "Карточка не найдена.")
+        if card.user_id != session["user_id"]:
+            abort(403, "Нет доступа.")
 
-    @app.route("/categories/edit/<int:category_id>")
-    def categories_edit(category_id):
-        """Заглушка — редактирование конкретной подборки"""
-        return f"hello, world — редактирование подборки #{category_id}"
+        if request.method == "POST":
+            category    = request.form.get("category", "").strip()
+            front_type  = request.form.get("front_type", "text")
+            back_type   = request.form.get("back_type", "text")
+            answer_text = request.form.get("answer_text", "").strip()
+
+            if front_type == "image":
+                f = request.files.get("front_file")
+                if f and f.filename:
+                    front_content, err = _save_upload(f, "лицевая сторона")
+                    if err:
+                        flash(err, "error")
+                        return redirect(url_for("cards_edit", card_id=card_id))
+                else:
+                    front_content = request.form.get("front_keep", "").strip()
+                    if not front_content:
+                        flash("Загрузите изображение для поля «лицевая сторона».", "error")
+                        return redirect(url_for("cards_edit", card_id=card_id))
+            else:
+                front_content = request.form.get("front_content", "").strip()
+
+            if back_type == "image":
+                f = request.files.get("back_file")
+                if f and f.filename:
+                    back_content, err = _save_upload(f, "оборотная сторона")
+                    if err:
+                        flash(err, "error")
+                        return redirect(url_for("cards_edit", card_id=card_id))
+                else:
+                    back_content = request.form.get("back_keep", "").strip()
+                    if not back_content:
+                        flash("Загрузите изображение для поля «оборотная сторона».", "error")
+                        return redirect(url_for("cards_edit", card_id=card_id))
+            else:
+                back_content = request.form.get("back_content", "").strip()
+
+            errors = []
+            if not category:    errors.append("Укажите категорию.")
+            if not answer_text: errors.append("Укажите краткий ответ.")
+            if front_type == "text" and not front_content: errors.append("Введите текст лицевой стороны.")
+            if back_type  == "text" and not back_content:  errors.append("Введите текст оборотной стороны.")
+            if errors:
+                flash(" ".join(errors), "error")
+                return redirect(url_for("cards_edit", card_id=card_id))
+
+            card.category      = category
+            card.front_type    = front_type
+            card.front_content = front_content
+            card.back_type     = back_type
+            card.back_content  = back_content
+            card.answer_text   = answer_text
+            db.session.commit()
+            return redirect(url_for("cards_mine"))
+
+        existing_categories = [
+            row[0] for row in db.session.query(Card.category).distinct().order_by(Card.category).all()
+        ]
+        return render_template("edit_card.html", card=card, existing_categories=existing_categories)
+
+    @app.route("/categories/edit", methods=["GET", "POST"])
+    def categories_edit():
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+        category_id = (request.args if request.method == "GET" else request.form).get("category_id", type=int)
+        if not category_id:
+            abort(400, "Не указан ID подборки.")
+        cat = db.session.get(Category, category_id)
+        if not cat:
+            abort(404, "Подборка не найдена.")
+        if cat.creator_id != session["user_id"]:
+            abort(403, "Нет доступа.")
+
+        if request.method == "POST":
+            name        = request.form.get("name", "").strip()
+            description = request.form.get("description", "").strip()
+            if not all([name, description]):
+                flash("Все поля обязательны.", "error")
+                return redirect(url_for("categories_edit", category_id=category_id))
+            cat.name        = name
+            cat.description = description
+            db.session.commit()
+            return redirect(url_for("categories_mine"))
+
+        return render_template("edit_category.html", category=cat)
+
+    @app.route("/cards/delete", methods=["DELETE"])
+    def cards_delete():
+        if "user_id" not in session:
+            return jsonify({"ok": False}), 401
+        data = request.get_json(silent=True) or {}
+        card = db.session.get(Card, data.get("id"))
+        if not card:
+            return jsonify({"ok": False}), 404
+        if card.user_id != session["user_id"]:
+            return jsonify({"ok": False}), 403
+        db.session.delete(card)
+        db.session.commit()
+        return jsonify({"ok": True})
+
+    @app.route("/categories/delete", methods=["DELETE"])
+    def categories_delete():
+        if "user_id" not in session:
+            return jsonify({"ok": False}), 401
+        data = request.get_json(silent=True) or {}
+        cat  = db.session.get(Category, data.get("id"))
+        if not cat:
+            return jsonify({"ok": False}), 404
+        if cat.creator_id != session["user_id"]:
+            return jsonify({"ok": False}), 403
+        db.session.delete(cat)
+        db.session.commit()
+        return jsonify({"ok": True})
 
     @app.route("/cards/mine")
     def cards_mine():

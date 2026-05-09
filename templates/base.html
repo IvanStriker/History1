@@ -118,6 +118,39 @@
   <!-- Базовый JS: фоновая анимация (работает на всех страницах) -->
   <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 
+  <!-- Диалог подтверждения (доступен на всех страницах) -->
+  <div id="confirm-overlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-text">
+    <div class="confirm-modal">
+      <p class="confirm-modal__text" id="confirm-text"></p>
+      <div class="confirm-modal__actions">
+        <button class="confirm-modal__btn confirm-modal__btn--confirm" id="confirm-ok">Удалить</button>
+        <button class="confirm-modal__btn confirm-modal__btn--cancel" id="confirm-cancel">Отмена</button>
+      </div>
+    </div>
+  </div>
+  <script>
+  window.showConfirm = function (message, onConfirm) {
+    var overlay   = document.getElementById('confirm-overlay');
+    var textEl    = document.getElementById('confirm-text');
+    var okBtn     = document.getElementById('confirm-ok');
+    var cancelBtn = document.getElementById('confirm-cancel');
+    textEl.textContent = message;
+    overlay.classList.add('confirm-overlay--open');
+    function close() {
+      overlay.classList.remove('confirm-overlay--open');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('click', onOverlay);
+    }
+    function onOk()       { close(); onConfirm(); }
+    function onCancel()   { close(); }
+    function onOverlay(e) { if (e.target === overlay) close(); }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('click', onOverlay);
+  };
+  </script>
+
   <!-- Специфические скрипты страницы -->
   {% block scripts %}{% endblock %}
 

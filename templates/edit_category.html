@@ -1,0 +1,12 @@
+{% extends 'new_category.html' %}
+
+{% block item_title_text %}Редактировать подборку{% endblock %}
+{% block item_heading %}Редактировать подборку{% endblock %}
+{% block item_action %}/categories/edit{% endblock %}
+
+{% block hidden_fields %}
+<input type="hidden" name="category_id" value="{{ category.id }}">
+{% endblock %}
+
+{% block val_name %}{{ category.name }}{% endblock %}
+{% block val_description %}{{ category.description }}{% endblock %}
