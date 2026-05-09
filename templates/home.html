@@ -43,7 +43,7 @@
           </div>
 
           <div class="btn-row">
-            <a href="/train" class="btn-start" role="button">
+            <a href="/train" class="btn-start" role="button" id="btn-start-train">
               <span class="btn-start__inner">
                 <svg class="btn-start__icon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M8 5v14l11-7z"/>
@@ -78,8 +78,75 @@
       </div>
     </div>
   </main>
+
+  <!-- Модальное окно настройки тренировки -->
+  <div id="train-modal-overlay" class="train-overlay" role="dialog" aria-modal="true" aria-labelledby="train-modal-title">
+    <div class="train-modal">
+      <h2 class="train-modal__title" id="train-modal-title">Настройки тренировки</h2>
+      <div class="train-modal__ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+      <div class="train-modal__rule"></div>
+
+      <form id="train-form" method="POST" action="/train" class="train-modal__form">
+
+        <!-- 1. Подборка -->
+        <div class="train-field">
+          <label class="train-label">Подборка</label>
+          <div class="train-select" id="train-select-wrap">
+            <input type="text" class="train-input train-select__input"
+                   id="train-category-input"
+                   placeholder="Выберите подборку..."
+                   autocomplete="off"
+                   spellcheck="false">
+            <input type="hidden" name="category" id="train-category-value">
+            <ul class="train-select__list" id="train-category-list" role="listbox"></ul>
+          </div>
+          <span class="train-field__error" id="train-category-error">Выберите подборку из списка</span>
+        </div>
+
+        <!-- 2. Способ составления -->
+        <div class="train-field">
+          <p class="train-label">Способ составления</p>
+          <div class="train-radio-group">
+            <label class="train-radio-opt">
+              <input type="radio" name="mode" value="all" checked>
+              <span>Все карточки из подборки</span>
+            </label>
+            <label class="train-radio-opt">
+              <input type="radio" name="mode" value="random">
+              <span>Рандомно</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 3. Количество карточек (активно при "Рандомно") -->
+        <div class="train-field train-field--disabled" id="train-count-field">
+          <label class="train-label" for="train-count">Количество карточек</label>
+          <div class="train-count-row">
+            <input type="number" class="train-input train-input--count"
+                   id="train-count" name="count"
+                   min="1" max="1" value="1" disabled>
+            <span class="train-count-hint" id="train-count-hint"></span>
+          </div>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="train-modal__actions">
+          <button type="submit" class="btn-train-start">Начать</button>
+          <button type="button" class="btn-train-cancel" id="train-cancel-btn">Отмена</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Tooltip для раскрытия длинных названий подборок -->
+  <div id="train-tooltip" class="train-tooltip" aria-hidden="true"></div>
+
 {% endblock %}
 
 {% block scripts %}
+<script>
+var TRAIN_CATS = [{"name": "Все карточки", "count": {{ total_cards_count }}}].concat({{ train_categories | tojson }});
+</script>
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}

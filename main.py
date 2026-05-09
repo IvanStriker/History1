@@ -79,6 +79,11 @@ def create_app() -> Flask:
                 .all()
             )
         ]
+        all_cats = db.session.query(Category).order_by(Category.name).all()
+        train_categories = [
+            {"name": cat.name, "count": cat.card_entries.count()}
+            for cat in all_cats
+        ]
 
         return render_template(
             "home.html",
@@ -90,6 +95,7 @@ def create_app() -> Flask:
             ),
             total_cards_count=total,
             categories=categories,
+            train_categories=train_categories,
         )
 
     @app.route("/settings")
@@ -306,10 +312,33 @@ def create_app() -> Flask:
                              categories=user_categories, 
                              title="Мои подборки")
 
-    @app.route("/train")
+    @app.route("/train", methods=["GET", "POST"])
     def train():
-        TRAIN_SIZE = 10
+        if request.method == "POST":
+            category = request.form.get("category", "").strip()
+            mode     = request.form.get("mode", "all")
+            count    = request.form.get("count", type=int)
 
+            if category == "Все карточки":
+                all_ids = [row[0] for row in db.session.query(Card.id).order_by(Card.id).all()]
+            else:
+                cat = Category.query.filter_by(name=category).first()
+                all_ids = [ce.card_id for ce in cat.card_entries.all()] if cat else []
+
+            if mode == "random" and count and count > 0:
+                selected = sample(all_ids, min(count, len(all_ids))) if all_ids else []
+            else:
+                selected = list(all_ids)
+
+            return render_template(
+                "train.html",
+                card_indices=selected,
+                total_questions=len(selected),
+                session_id=str(uuid.uuid4()),
+            )
+
+        # GET — legacy: 10 random from all cards
+        TRAIN_SIZE = 10
         all_ids: list[int] = [
             row[0]
             for row in db.session.query(Card.id).order_by(Card.id).all()
