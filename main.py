@@ -18,7 +18,7 @@ from flask import Flask, abort, flash, jsonify, redirect, render_template, reque
 from flask_migrate import Migrate, upgrade as db_upgrade
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import Card, User, db
+from models import Card, Category, User, db
 
 
 def create_app() -> Flask:
@@ -244,6 +244,49 @@ def create_app() -> Flask:
     @app.route("/profile")
     def profile():
         return render_template("profile.html")
+
+    @app.route("/new_card", methods=["GET", "POST"])
+    def new_card():
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+        if request.method == "POST":
+            category      = request.form.get("category", "").strip()
+            front_type    = request.form.get("front_type", "text")
+            front_content = request.form.get("front_content", "").strip()
+            back_type     = request.form.get("back_type", "text")
+            back_content  = request.form.get("back_content", "").strip()
+            answer_text   = request.form.get("answer_text", "").strip()
+            if not all([category, front_content, back_content, answer_text]):
+                flash("Все поля обязательны.", "error")
+                return redirect(url_for("new_card"))
+            card = Card(
+                category=category, front_type=front_type, front_content=front_content,
+                back_type=back_type, back_content=back_content, answer_text=answer_text,
+                user_id=session["user_id"],
+            )
+            db.session.add(card)
+            db.session.commit()
+            return redirect(url_for("cards_page"))
+        existing_categories = [
+            row[0] for row in db.session.query(Card.category).distinct().order_by(Card.category).all()
+        ]
+        return render_template("new_card.html", existing_categories=existing_categories)
+
+    @app.route("/new_category", methods=["GET", "POST"])
+    def new_category():
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+        if request.method == "POST":
+            name        = request.form.get("name", "").strip()
+            description = request.form.get("description", "").strip()
+            if not all([name, description]):
+                flash("Все поля обязательны.", "error")
+                return redirect(url_for("new_category"))
+            cat = Category(name=name, description=description, creator_id=session["user_id"])
+            db.session.add(cat)
+            db.session.commit()
+            return redirect(url_for("categories"))
+        return render_template("new_category.html")
 
     # ── Обработчики ошибок ────────────────────────────────────────────────────
 

@@ -1,0 +1,63 @@
+{% extends 'new_item.html' %}
+
+{% block item_title_text %}Новая карточка{% endblock %}
+{% block item_heading %}Новая карточка{% endblock %}
+{% block item_action %}/new_card{% endblock %}
+
+{% block new_item_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/new_card.css') }}" />
+{% endblock %}
+
+{% block item_fields %}
+
+  <div class="new-item-field">
+    <label class="new-item-label" for="category">Категория</label>
+    <input class="new-item-input" type="text" id="category" name="category"
+           list="category-options" autocomplete="off" required
+           placeholder="Введите или выберите категорию">
+    <datalist id="category-options">
+      {% for cat in existing_categories %}
+      <option value="{{ cat }}">
+      {% endfor %}
+    </datalist>
+  </div>
+
+  <fieldset class="card-side">
+    <legend class="new-item-label">Лицевая сторона</legend>
+    <div class="card-type-row">
+      <label class="card-type-opt">
+        <input type="radio" name="front_type" value="text" checked> Текст
+      </label>
+      <label class="card-type-opt">
+        <input type="radio" name="front_type" value="image"> Изображение
+      </label>
+    </div>
+    <textarea class="new-item-textarea" id="front_content" name="front_content"
+              rows="3" required placeholder="Введите текст..."></textarea>
+  </fieldset>
+
+  <fieldset class="card-side">
+    <legend class="new-item-label">Оборотная сторона</legend>
+    <div class="card-type-row">
+      <label class="card-type-opt">
+        <input type="radio" name="back_type" value="text" checked> Текст
+      </label>
+      <label class="card-type-opt">
+        <input type="radio" name="back_type" value="image"> Изображение
+      </label>
+    </div>
+    <textarea class="new-item-textarea" id="back_content" name="back_content"
+              rows="3" required placeholder="Введите текст..."></textarea>
+  </fieldset>
+
+  <div class="new-item-field">
+    <label class="new-item-label" for="answer_text">Ответ (краткий)</label>
+    <input class="new-item-input" type="text" id="answer_text" name="answer_text"
+           required placeholder="Краткое название / имя">
+  </div>
+
+{% endblock %}
+
+{% block new_item_scripts %}
+<script src="{{ url_for('static', filename='js/new_card.js') }}"></script>
+{% endblock %}

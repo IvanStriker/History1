@@ -3,7 +3,7 @@
 {% block title %}Профиль — Историческая игра{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}?v=2" />
 {% endblock %}
 
 {% block body_content %}
@@ -34,6 +34,11 @@
     <form method="POST" action="/logout" class="profile-logout">
       <button type="submit" class="btn-logout">Выйти</button>
     </form>
+  </div>
+
+  <div class="profile-create-btns">
+    <a href="/new_card"     class="btn-profile-create">Новая карточка</a>
+    <a href="/new_category" class="btn-profile-create">Новая подборка</a>
   </div>
 
   {% else %}

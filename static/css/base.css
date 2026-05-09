@@ -116,3 +116,40 @@ body:not(.page-train) {
   .tab-nav__item span { display: none; }
   .tab-nav__icon { width: 22px; height: 22px; }
 }
+
+/* ── Кнопка «Создать» и выпадающее меню ──── */
+.tab-nav__add-wrap {
+  cursor: pointer;
+  /* position: relative, flex: 1, display: flex, etc — inherited from .tab-nav__item */
+}
+
+.tab-nav__add-menu {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 180px;
+  background: rgba(8, 6, 4, 0.97);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 4px;
+  padding: 0.3rem 0;
+  z-index: 1100;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.tab-nav__add-menu--open { display: block; }
+
+.tab-nav__add-option {
+  display: block;
+  padding: 0.6rem 1.2rem;
+  color: var(--parchment-dim);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.tab-nav__add-option:hover { color: var(--gold-primary); }

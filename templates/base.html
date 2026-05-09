@@ -88,6 +88,19 @@
       </svg>
       <span>Профиль</span>
     </a>
+
+    <div class="tab-nav__item tab-nav__add-wrap" id="addMenuBtn"
+         role="button" tabindex="0"
+         aria-haspopup="true" aria-expanded="false">
+      <svg class="tab-nav__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+      </svg>
+      <span>Создать</span>
+      <div class="tab-nav__add-menu" id="addMenu" role="menu">
+        <a href="/new_card"     class="tab-nav__add-option" role="menuitem">Новая карточка</a>
+        <a href="/new_category" class="tab-nav__add-option" role="menuitem">Новая подборка</a>
+      </div>
+    </div>
     {% endif %}
 
   </nav>
@@ -107,5 +120,24 @@
 
   <!-- Специфические скрипты страницы -->
   {% block scripts %}{% endblock %}
+
+  {% if current_user %}
+  <script>
+  (function () {
+    var btn  = document.getElementById('addMenuBtn');
+    var menu = document.getElementById('addMenu');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = menu.classList.toggle('tab-nav__add-menu--open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', function () {
+      menu.classList.remove('tab-nav__add-menu--open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  })();
+  </script>
+  {% endif %}
 </body>
 </html>

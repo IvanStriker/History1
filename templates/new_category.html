@@ -1,0 +1,29 @@
+{% extends 'new_item.html' %}
+
+{% block item_title_text %}Новая подборка{% endblock %}
+{% block item_heading %}Новая подборка{% endblock %}
+{% block item_action %}/new_category{% endblock %}
+
+{% block new_item_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/new_category.css') }}" />
+{% endblock %}
+
+{% block item_fields %}
+
+  <div class="new-item-field">
+    <label class="new-item-label" for="name">Название</label>
+    <input class="new-item-input" type="text" id="name" name="name"
+           required placeholder="Введите название подборки">
+  </div>
+
+  <div class="new-item-field">
+    <label class="new-item-label" for="description">Описание</label>
+    <textarea class="new-item-textarea" id="description" name="description"
+              rows="4" required placeholder="Опишите подборку..."></textarea>
+  </div>
+
+{% endblock %}
+
+{% block new_item_scripts %}
+<script src="{{ url_for('static', filename='js/new_category.js') }}"></script>
+{% endblock %}

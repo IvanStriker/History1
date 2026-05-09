@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}{% block item_title_text %}Создать{% endblock %} — Историческая игра{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/new_item.css') }}" />
+{% block new_item_head %}{% endblock %}
+{% endblock %}
+
+{% block body_content %}
+<main class="new-item-page">
+
+  <h1 class="new-item-title">{% block item_heading %}Создать{% endblock %}</h1>
+  <div class="new-item-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="new-item-rule"></div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <ul class="new-item-flash-list">
+    {% for category, message in messages %}
+    <li class="new-item-flash new-item-flash--{{ category }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{% block item_action %}#{% endblock %}" class="new-item-form">
+    {% block item_fields %}{% endblock %}
+
+    <div class="new-item-actions">
+      <button type="submit" class="btn-new-save">Сохранить</button>
+      <button type="button" class="btn-new-cancel" onclick="history.back()">Отмена</button>
+    </div>
+  </form>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/new_item.js') }}"></script>
+{% block new_item_scripts %}{% endblock %}
+{% endblock %}
