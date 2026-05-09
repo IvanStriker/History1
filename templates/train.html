@@ -80,18 +80,24 @@
        ╚═══════════════════════════════════════════════════╝ -->
   <main class="train-main">
 
-    <!-- Контейнер, в который Phaser монтирует <canvas> -->
+    <!-- Кнопка "Завершить" — над карточкой, по центру -->
+    <div class="finish-container">
+      <button id="finish-btn" class="btn-finish" type="button">
+        Завершить тренировку
+      </button>
+    </div>
+
+    <!-- Phaser карточка -->
     <div id="phaser-card" aria-label="Карточка"></div>
 
-    <!-- Оверлей-подсказка (показывается при загрузке карточки) -->
+    <!-- Подсказка при загрузке -->
     <div class="card-hint" id="card-hint" aria-live="polite">
       <span class="spinner-border spinner-border-sm text-warning me-2" role="status"></span>
       Загрузка карточки…
     </div>
 
-    <!-- ── Область ответа ── -->
+    <!-- Область ответа -->
     <div class="answer-area" id="answer-area">
-
       <div class="answer-row">
         <input
           type="text"
@@ -106,20 +112,12 @@
         </button>
       </div>
 
-      <!-- Кнопка переворота (скрыта до проверки ответа) -->
-      <button
-        id="flip-btn"
-        class="btn-flip"
-        type="button"
-        style="display:none"
-        aria-label="Перевернуть карточку"
-      >
+      <button id="flip-btn" class="btn-flip" type="button" style="display:none">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
         </svg>
         Перевернуть
       </button>
-
     </div>
 
   </main>
@@ -127,21 +125,22 @@
   <!-- ╔═══════════════════════════════════════════════════╗
        ║  НИЖНЯЯ НАВИГАЦИЯ: Назад / Далее                 ║
        ╚═══════════════════════════════════════════════════╝ -->
-  <footer class="train-footer">
-    <button id="prev-btn" class="btn-nav btn-nav--prev" type="button" disabled>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
-      Назад
-    </button>
+  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<footer class="train-footer">
+  <button id="prev-btn" class="btn-nav btn-nav--prev" type="button" disabled>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+    Назад
+  </button>
 
-    <div class="footer-dots" id="footer-dots" aria-hidden="true">
-      <!-- JS заполнит точки-индикаторы прогресса -->
-    </div>
+  <div class="footer-center">
+    <div class="footer-dots" id="footer-dots" aria-hidden="true"></div>
+  </div>
 
-    <button id="next-btn" class="btn-nav btn-nav--next" type="button">
-      Далее
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
-    </button>
-  </footer>
+  <button id="next-btn" class="btn-nav btn-nav--next" type="button">
+    Далее
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+  </button>
+</footer>
 {% endblock %}
 
 {% block scripts %}

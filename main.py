@@ -19,7 +19,7 @@ from flask_migrate import Migrate, upgrade as db_upgrade
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-from models import Card, Category, User, db
+from models import Card, Category, User, Training, TrainingCard, db
 
 _ALLOWED_IMAGE_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
 
@@ -114,6 +114,40 @@ def create_app() -> Flask:
         if "heading_scale" in data: user.heading_scale = float(data["heading_scale"])
         db.session.commit()
         return jsonify({"ok": True})
+    
+    @app.route("/train/complete", methods=["POST"])
+    def train_complete():
+        if "user_id" not in session:
+            return jsonify({"ok": False, "error": "Unauthorized"}), 401
+
+        data = request.get_json(silent=True) or {}
+        card_results = data.get("results", [])  # список {card_id, user_answer, is_correct}
+
+        if not card_results:
+            return jsonify({"ok": False, "error": "No results"}), 400
+
+        # Создаём запись тренировки
+        training = Training(
+            user_id=session["user_id"],
+            score=sum(1 for r in card_results if r.get("is_correct")),
+            cards_amount=len(card_results)
+        )
+        db.session.add(training)
+        db.session.flush()  # чтобы получить training.id
+
+        # Создаём записи для каждой карточки
+        for res in card_results:
+            tc = TrainingCard(
+                training_id=training.id,
+                card_id=res.get("card_id"),
+                user_answer=res.get("user_answer"),
+                is_valid_answer=bool(res.get("is_correct"))
+            )
+            db.session.add(tc)
+
+        db.session.commit()
+
+        return jsonify({"ok": True, "training_id": training.id})
 
     @app.route("/cards")
     def cards_page():

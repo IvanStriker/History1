@@ -2,7 +2,7 @@
    train.css — Страница тренировки
    ═══════════════════════════════════════════ */
 
-/* ── Переменные (те же, что в home.css) ─── */
+/* ── Переменные ──────────────────────────── */
 :root {
   --bg-base:         #080604;
   --bg-surface:      #100d08;
@@ -62,7 +62,6 @@ body::before {
   border-bottom: 1px solid rgba(201, 168, 76, 0.15);
 }
 
-/* Шестерня настроек */
 .train-settings {
   display: flex;
   align-items: center;
@@ -80,7 +79,6 @@ body::before {
   fill: currentColor;
 }
 
-/* Логотип */
 .train-logo {
   font-family: var(--font-display);
   font-size: 1.1rem;
@@ -88,11 +86,9 @@ body::before {
   text-decoration: none;
   letter-spacing: 0.06em;
   text-shadow: 0 0 20px rgba(201, 168, 76, 0.35);
-  transition: opacity 0.2s;
 }
 .train-logo:hover { opacity: 0.75; }
 
-/* Блок прогресса */
 .progress-block {
   display: flex;
   align-items: center;
@@ -119,7 +115,6 @@ body::before {
 .progress-stat--total   .progress-stat__num { color: var(--gold-primary); }
 .progress-divider { color: var(--gold-dim); opacity: 0.5; }
 
-/* Позиция карточки (право) */
 .card-position {
   font-family: var(--font-display);
   font-size: 0.85rem;
@@ -145,30 +140,21 @@ body::before {
   overflow: hidden;
 }
 
-/* ── Phaser-контейнер ── */
 #phaser-card {
   position: relative;
   flex-shrink: 0;
   border-radius: 4px;
-  /* Тень от всего канваса */
   filter: drop-shadow(0 8px 32px rgba(0,0,0,0.6));
   transition: filter 0.4s;
 }
 
-/* Подсветка правильного ответа */
 #phaser-card.glow-correct {
-  filter:
-    drop-shadow(0 0 16px rgba(76, 175, 125, 0.7))
-    drop-shadow(0 8px 32px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 0 16px rgba(76, 175, 125, 0.7)) drop-shadow(0 8px 32px rgba(0,0,0,0.5));
 }
-/* Подсветка неправильного ответа */
 #phaser-card.glow-wrong {
-  filter:
-    drop-shadow(0 0 16px rgba(192, 57, 43, 0.7))
-    drop-shadow(0 8px 32px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 0 16px rgba(192, 57, 43, 0.7)) drop-shadow(0 8px 32px rgba(0,0,0,0.5));
 }
 
-/* Подсказка / лоадер */
 .card-hint {
   position: absolute;
   font-style: italic;
@@ -197,7 +183,6 @@ body::before {
   width: 100%;
 }
 
-/* Поле ввода */
 .answer-input {
   flex: 1;
   background: rgba(26, 21, 13, 0.85);
@@ -208,7 +193,6 @@ body::before {
   font-size: 1.1rem;
   padding: 0.6rem 1rem;
   outline: none;
-  transition: border-color 0.25s, box-shadow 0.25s;
 }
 .answer-input::placeholder { color: rgba(184, 160, 122, 0.4); }
 .answer-input:focus {
@@ -220,7 +204,6 @@ body::before {
   cursor: not-allowed;
 }
 
-/* Кнопка «Проверить» */
 .btn-submit {
   background: linear-gradient(135deg, var(--gold-dim), var(--gold-primary));
   border: none;
@@ -232,14 +215,12 @@ body::before {
   padding: 0.6rem 1.3rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: box-shadow 0.3s;
 }
 .btn-submit:hover:not(:disabled) {
-  box-shadow: 0 0 28px rgba(201, 168, 76, 0.45), 0 0 60px rgba(201, 168, 76, 0.15);
+  box-shadow: 0 0 28px rgba(201, 168, 76, 0.45);
 }
 .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* Кнопка «Перевернуть» */
 .btn-flip {
   display: flex;
   align-items: center;
@@ -253,17 +234,14 @@ body::before {
   font-size: 0.95rem;
   padding: 0.4rem 1rem;
   cursor: pointer;
-  transition: color 0.25s, border-color 0.25s, box-shadow 0.3s;
 }
 .btn-flip:hover {
   color: var(--gold-primary);
   border-color: var(--gold-primary);
-  box-shadow: 0 0 20px rgba(201, 168, 76, 0.25), 0 0 50px rgba(201, 168, 76, 0.08);
 }
 .btn-flip svg {
   width: 16px; height: 16px;
   fill: currentColor;
-  flex-shrink: 0;
 }
 
 /* ─────────────────────────────────────────
@@ -276,13 +254,41 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
   background: linear-gradient(to top, rgba(8,6,4,0.97) 0%, rgba(8,6,4,0.75) 100%);
   border-top: 1px solid rgba(201, 168, 76, 0.12);
   z-index: 100;
+  gap: 0.75rem;
 }
 
-/* Кнопки навигации */
+/* Центральная группа: точки + Завершить */
+.footer-center {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.footer-dots {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(201, 168, 76, 0.18);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  transition: background 0.3s;
+}
+.dot.dot--current  { background: var(--gold-primary); }
+.dot.dot--correct  { background: var(--correct-color); border-color: var(--correct-color); }
+.dot.dot--wrong    { background: var(--wrong-color);   border-color: var(--wrong-color); }
+
+/* Кнопки Назад / Далее */
 .btn-nav {
   display: flex;
   align-items: center;
@@ -293,47 +299,69 @@ body::before {
   color: var(--parchment-dim);
   font-family: var(--font-body);
   font-size: 1rem;
-  padding: 0.5rem 1.4rem;
+  padding: 0.55rem 1.3rem;
   cursor: pointer;
-  transition: color 0.25s, border-color 0.25s, box-shadow 0.3s;
+  transition: all 0.25s;
   letter-spacing: 0.04em;
 }
-.btn-nav svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
+.btn-nav svg { 
+  width: 18px; 
+  height: 18px; 
+  fill: currentColor; 
+  flex-shrink: 0; 
+}
 .btn-nav--next { flex-direction: row-reverse; }
+
 .btn-nav:hover:not(:disabled) {
+  color: var(--gold-primary);
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.25);
+}
+.btn-nav:disabled { 
+  opacity: 0.28; 
+  cursor: not-allowed; 
+}
+
+/* Кнопка Завершить */
+.btn-finish {
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  color: var(--parchment-dim);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.55rem 1.4rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.btn-finish:hover {
   color: var(--gold-primary);
   border-color: var(--gold-primary);
   box-shadow: 0 0 20px rgba(201, 168, 76, 0.25), 0 0 50px rgba(201, 168, 76, 0.08);
 }
-.btn-nav:disabled { opacity: 0.28; cursor: not-allowed; }
 
-/* Точки прогресса */
-.footer-dots {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 60%;
+.btn-finish:active {
+  transform: scale(0.97);
 }
-.dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: rgba(201, 168, 76, 0.18);
-  border: 1px solid rgba(201, 168, 76, 0.25);
-  transition: background 0.3s;
-  flex-shrink: 0;
-}
-.dot.dot--current  { background: var(--gold-primary); }
-.dot.dot--correct  { background: var(--correct-color); border-color: var(--correct-color); }
-.dot.dot--wrong    { background: var(--wrong-color);   border-color: var(--wrong-color); }
 
 /* ─────────────────────────────────────────
-   АДАПТИВ
+   Адаптив
    ───────────────────────────────────────── */
 @media (max-width: 576px) {
-  .progress-block { gap: 0.4rem; padding: 0.3rem 0.7rem; }
-  .progress-stat__num { font-size: 0.88rem; }
-  .btn-nav { padding: 0.45rem 0.9rem; font-size: 0.88rem; }
-  .answer-input { font-size: 0.95rem; }
-  .footer-dots { max-width: 40%; }
+  .train-footer {
+    padding: 0 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .btn-finish, .btn-nav {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .footer-center {
+    gap: 0.75rem;
+  }
 }

@@ -58,6 +58,9 @@ class User(db.Model):
     categories = db.relationship("Category", back_populates="creator",
                                  lazy="dynamic", cascade="all, delete-orphan")
 
+    trainings = db.relationship("Training", back_populates="user",
+                                lazy="dynamic", cascade="all, delete-orphan")
+
     def __repr__(self) -> str:
         return f"<User id={self.id} username={self.username!r}>"
 
@@ -95,3 +98,84 @@ class CategoryCard(db.Model):
 
     def __repr__(self) -> str:
         return f"<CategoryCard card={self.card_id} cat={self.category_id}>"
+
+
+class Training(db.Model):
+    __tablename__ = "trainings"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=True
+    )
+
+    score = db.Column(
+        db.Integer,
+        nullable=False,
+        default=0
+    )
+
+    cards_amount = db.Column(
+        db.Integer,
+        nullable=False,
+        default=0
+    )
+
+    user = db.relationship(
+        "User",
+        back_populates="trainings"
+    )
+
+    cards = db.relationship(
+        "TrainingCard",
+        back_populates="training",
+        cascade="all, delete-orphan",
+        lazy="select"
+    )
+
+    def __repr__(self):
+        return f"<Training id={self.id} score={self.score}>"
+    
+
+class TrainingCard(db.Model):
+    __tablename__ = "training_cards"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    training_id = db.Column(
+        db.Integer,
+        db.ForeignKey("trainings.id"),
+        nullable=False
+    )
+
+    card_id = db.Column(
+        db.Integer,
+        db.ForeignKey("cards.id"),
+        nullable=False
+    )
+
+    user_answer = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    is_valid_answer = db.Column(
+        db.Boolean,
+        nullable=False
+    )
+
+    training = db.relationship(
+        "Training",
+        back_populates="cards"
+    )
+
+    card = db.relationship("Card")
+
+    def __repr__(self):
+        return (
+            f"<TrainingCard "
+            f"training={self.training_id} "
+            f"card={self.card_id}>"
+        )

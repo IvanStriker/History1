@@ -652,6 +652,8 @@ function goPrev() {
 /* ─────────────────────────────────────────────────────────────
    Привязка событий DOM
    ───────────────────────────────────────────────────────────── */
+el.finishBtn = document.getElementById('finish-btn');
+el.finishBtn.addEventListener('click', finishTraining);
 el.submitBtn.addEventListener('click', submitAnswer);
 el.flipBtn.addEventListener('click', handleFlipBtn);
 el.nextBtn.addEventListener('click', goNext);
@@ -668,6 +670,43 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft')  goPrev();
   if (e.key === ' ' || e.key === 'f') handleFlipBtn();
 });
+
+/* =============================================
+   ЗАВЕРШЕНИЕ ТРЕНИРОВКИ
+   ============================================= */
+
+async function finishTraining() {
+  if (state.isLoading) return;
+
+  const results = CARD_INDICES.map((cardId, idx) => {
+    const answer = state.userAnswers[idx];
+    return {
+      card_id:     cardId,
+      user_answer: answer ? answer.answer : "",
+      is_correct:  answer ? answer.correct : false
+    };
+  });
+
+  try {
+    const resp = await fetch('/train/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ results })
+    });
+
+    const data = await resp.json();
+
+    if (data.ok) {
+      // Успешно сохранено — переходим на главную
+      window.location.href = '/home';
+    } else {
+      alert('Ошибка при сохранении результатов: ' + (data.error || 'Неизвестная ошибка'));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Не удалось отправить результаты тренировки');
+  }
+}
 
 /* ─────────────────────────────────────────────────────────────
    Запуск
