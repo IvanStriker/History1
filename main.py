@@ -115,6 +115,20 @@ def create_app() -> Flask:
         db.session.commit()
         return jsonify({"ok": True})
     
+    @app.route("/history")
+    def history():
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+
+        user_id = session["user_id"]
+
+        trainings = db.session.query(Training)\
+            .filter_by(user_id=user_id)\
+            .order_by(Training.id.desc())\
+            .all()
+
+        return render_template("history.html", trainings=trainings)
+    
     @app.route("/train/complete", methods=["POST"])
     def train_complete():
         if "user_id" not in session:

@@ -1,0 +1,170 @@
+/* ═══════════════════════════════════════════
+   history.css — История тренировок
+   Стиль: Тёмная Академия / Золотой Архив
+   ═══════════════════════════════════════════ */
+
+:root {
+  --bg-base:      #080604;
+  --bg-surface:   #100d08;
+  --bg-panel:     #130f09;
+  --gold-primary: #c9a84c;
+  --gold-dim:     #8b6914;
+  --gold-glow:    rgba(201, 168, 76, 0.14);
+  --parchment:    #e8d5a3;
+  --parchment-dim:#b8a07a;
+
+  --font-display: 'Cinzel Decorative', serif;
+  --font-body:    'EB Garamond', serif;
+}
+
+.history-page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 3rem 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-base);
+  color: var(--parchment);
+}
+
+/* ── Заголовок ────────────────────────────── */
+.history-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--gold-primary);
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.35);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.profile-ornament {
+  font-size: 0.9rem;
+  letter-spacing: 0.6em;
+  color: var(--gold-primary);
+  opacity: 0.5;
+  margin-bottom: 0.8rem;
+}
+
+.profile-rule {
+  width: 100%;
+  max-width: 420px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 30%, var(--gold-primary) 50%, var(--gold-dim) 70%, transparent);
+  margin-bottom: 3rem;
+}
+
+
+/* ── Список тренировок ────────────────────── */
+.history-list {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-top: 1.5rem;
+}
+
+.history-card {
+  background: rgba(201, 168, 76, 0.03);
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 4px;
+  padding: 1.8rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.history-card:hover {
+  background: rgba(201, 168, 76, 0.06);
+  border-color: var(--gold-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 35px rgba(201, 168, 76, 0.12);
+}
+
+.history-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.history-card__date {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--parchment-dim);
+}
+
+.history-card__score {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  color: var(--gold-primary);
+  letter-spacing: 0.06em;
+}
+
+.history-card__accuracy {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--parchment);
+  margin-top: 0.4rem;
+}
+
+.history-card__accuracy strong {
+  color: var(--gold-primary);
+  font-family: var(--font-display);
+}
+
+/* ── Заглушка ─────────────────────────────── */
+.cat-stub {
+  max-width: 480px;
+  text-align: center;
+  padding: 3rem 2rem;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 4px;
+  background: rgba(201, 168, 76, 0.03);
+}
+
+.cat-stub__icon svg {
+  width: 64px;
+  height: 64px;
+  fill: var(--gold-dim);
+  opacity: 0.5;
+}
+
+.cat-stub__text {
+  font-size: 1.1rem;
+  line-height: 1.75;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.cat-stub__hint {
+  font-style: italic;
+  color: var(--parchment-dim);
+  opacity: 0.8;
+}
+
+.cat-stub__link {
+  display: inline-block;
+  margin-top: 1.2rem;
+  padding: 0.6rem 1.8rem;
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  color: var(--parchment-dim);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.cat-stub__link:hover {
+  color: var(--gold-primary);
+  border-color: var(--gold-primary);
+}
+
+/* Адаптив */
+@media (max-width: 520px) {
+  .history-card {
+    padding: 1.4rem 1.5rem;
+  }
+}

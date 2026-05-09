@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}История тренировок — Историческая игра{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}?v=2" />
+{% endblock %}
+
+{% block body_content %}
+<main class="history-page">
+
+  <!-- Назад -->
+  <a href="/profile" class="cat-back-link">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </svg>
+    Назад в профиль
+  </a>
+
+  <h1 class="history-title">История тренировок</h1>
+  <div class="profile-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="profile-rule"></div>
+
+  {% if trainings and trainings|length > 0 %}
+    <div class="history-list">
+      {% for training in trainings %}
+      <div class="history-card">
+        <div class="history-card__header">
+          <span class="history-card__date">
+            {{ training.created_at.strftime('%d.%m.%Y %H:%M') if training.created_at else 'Дата неизвестна' }}
+          </span>
+          <span class="history-card__score">
+            {{ training.score }} / {{ training.cards_amount }}
+          </span>
+        </div>
+        
+        <div class="history-card__accuracy">
+          Точность: 
+          <strong>{{ ((training.score / training.cards_amount * 100) if training.cards_amount > 0 else 0)|round(1) }}%</strong>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Заглушка -->
+    <div class="cat-stub">
+      <div class="cat-stub__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+      </div>
+      <p class="cat-stub__text">
+        У вас пока нет завершённых тренировок.
+      </p>
+      <p class="cat-stub__hint">
+        Начните тренировку, чтобы здесь появилась история ваших результатов.
+      </p>
+      <a href="/train" class="cat-stub__link">Начать первую тренировку</a>
+    </div>
+  {% endif %}
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}
