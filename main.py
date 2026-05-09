@@ -130,6 +130,56 @@ def create_app() -> Flask:
             })
         return render_template("cards.html", cards=cards_data)
 
+    # ==================== НОВЫЕ РОУТЫ ====================
+
+    @app.route("/cards/mine")
+    def cards_mine():
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+        
+        user_id = session["user_id"]
+        user_cards = db.session.query(Card)\
+            .filter_by(user_id=user_id)\
+            .order_by(Card.id.desc())\
+            .all()
+
+        cards_data = []
+        for card in user_cards:
+            front_content = card.front_content
+            if card.front_type == "image":
+                front_content = url_for("static", filename=front_content.replace("./", ""))
+            back_content = card.back_content
+            if card.back_type == "image":
+                back_content = url_for("static", filename=back_content.replace("./", ""))
+            cards_data.append({
+                "id":            card.id,
+                "front_type":    card.front_type,
+                "front_content": front_content,
+                "back_type":     card.back_type,
+                "back_content":  back_content,
+                "answer_text":   card.answer_text,
+                "category":      card.category,
+            })
+
+        return render_template("cards.html", 
+                             cards=cards_data, 
+                             title="Мои карточки")
+
+    @app.route("/categories/mine")
+    def categories_mine():
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+        
+        user_id = session["user_id"]
+        user_categories = db.session.query(Category)\
+            .filter_by(creator_id=user_id)\
+            .order_by(Category.id.desc())\
+            .all()
+
+        return render_template("categories.html", 
+                             categories=user_categories, 
+                             title="Мои подборки")
+
     @app.route("/train")
     def train():
         TRAIN_SIZE = 10
