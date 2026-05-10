@@ -46,13 +46,16 @@
     markItemSelected(id, false);
   });
 
-  // ── Поиск ─────────────────────────────────
+  // ── Поиск по всем полям ───────────────────
   if (searchEl) {
     searchEl.addEventListener('input', function () {
       var q = this.value.toLowerCase().trim();
       listEl.querySelectorAll('.card-picker__item').forEach(function (item) {
-        var text = (item.dataset.text || '').toLowerCase();
-        item.style.display = (!q || text.includes(q)) ? '' : 'none';
+        var front  = (item.dataset.front  || '').toLowerCase();
+        var back   = (item.dataset.back   || '').toLowerCase();
+        var answer = (item.dataset.answer || '').toLowerCase();
+        var match  = !q || front.includes(q) || back.includes(q) || answer.includes(q);
+        item.style.display = match ? '' : 'none';
       });
     });
   }

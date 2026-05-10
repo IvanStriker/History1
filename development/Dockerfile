@@ -26,4 +26,4 @@ COPY . .
 RUN uv venv
 RUN uv sync
 
-CMD ["sh", "-c", "uv run gunicorn -b 0.0.0.0:8000 main:app & GPID=$! && until curl -sf http://localhost:8000/ >/dev/null 2>&1; do sleep 1; done && uv run python seed_pg.py && wait $GPID"]
+CMD ["sh", "-c", "uv run gunicorn -b 0.0.0.0:8000 --timeout 120 main:app & GPID=$! && until curl -sf http://localhost:8000/ >/dev/null 2>&1; do sleep 1; done && uv run python seed_pg.py && wait $GPID"]

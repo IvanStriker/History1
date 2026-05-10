@@ -10,7 +10,11 @@ app.py — Flask-приложение
   SECRET_KEY    — секрет для Flask-сессий
 """
 
+import json
+import logging
 import os
+import urllib.request
+import urllib.error
 import uuid
 from random import sample
 
@@ -23,6 +27,74 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
 from models import Card, Category, CategoryCard, User, Training, TrainingCard, db
+
+logger = logging.getLogger(__name__)
+
+
+def _call_rag(path: str, data: dict, timeout: int = 10) -> dict | None:
+    """Отправляет POST-запрос к RAG-сервису. Возвращает None при любой ошибке."""
+    rag_url = os.environ.get("RAG_URL", "")
+    if not rag_url:
+        return None
+    try:
+        body = json.dumps(data).encode()
+        req = urllib.request.Request(
+            f"{rag_url}{path}",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        logger.warning(f"RAG call {path} failed: {e}")
+        return None
+
+
+def _card_rag_dict(card: Card) -> dict:
+    return {
+        "id": card.id,
+        "front_type": card.front_type,
+        "front_content": card.front_content if card.front_type == "text" else "",
+        "back_type": card.back_type,
+        "back_content": card.back_content if card.back_type == "text" else "",
+        "answer_text": card.answer_text or "",
+    }
+
+
+def _call_rag_bg(path: str, data: dict, timeout: int = 60) -> None:
+    """Fire-and-forget: отправляет RAG-запрос в фоновом треде."""
+    import threading
+    threading.Thread(target=_call_rag, args=(path, data, timeout), daemon=True).start()
+
+
+def _bootstrap_rag(app: Flask) -> None:
+    """При старте: если RAG пуст — загружает все карточки и подборки."""
+    rag_url = os.environ.get("RAG_URL", "")
+    if not rag_url:
+        return
+    try:
+        req = urllib.request.Request(f"{rag_url}/health", method="GET")
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            health = json.loads(resp.read())
+        if health.get("stores", {}).get("all_cards", 0) > 0:
+            return
+    except Exception:
+        return
+
+    with app.app_context():
+        cards = db.session.query(Card).all()
+        all_dicts = [_card_rag_dict(c) for c in cards]
+        if all_dicts:
+            _call_rag("/build", {"scope": "all_cards", "cards": all_dicts}, timeout=120)
+            logger.info(f"RAG bootstrapped all_cards: {len(all_dicts)} cards")
+
+        categories = db.session.query(Category).all()
+        for cat in categories:
+            cat_cards = [_card_rag_dict(cc.card) for cc in cat.card_entries.all()]
+            if cat_cards:
+                _call_rag("/build", {"scope": f"category_{cat.id}", "cards": cat_cards}, timeout=60)
+                logger.info(f"RAG bootstrapped category_{cat.id}: {len(cat_cards)} cards")
 
 _ALLOWED_IMAGE_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
 
@@ -57,6 +129,9 @@ def create_app() -> Flask:
     with app.app_context():
         db_upgrade()
 
+    import threading
+    threading.Thread(target=_bootstrap_rag, args=(app,), daemon=True).start()
+
     # ── Контекстный процессор (доступен во всех шаблонах) ────────────────────
 
     @app.context_processor
@@ -65,7 +140,8 @@ def create_app() -> Flask:
         user_id = session.get("user_id")
         if user_id:
             user = db.session.get(User, user_id)
-        return dict(current_user=user)
+        all_categories = db.session.query(Category).order_by(Category.name).all()
+        return dict(current_user=user, all_categories=all_categories)
 
     # ── Маршруты ──────────────────────────────────────────────────────────────
 
@@ -308,10 +384,15 @@ def create_app() -> Flask:
             cat.description = description
             db.session.query(CategoryCard).filter_by(category_id=cat.id).delete()
             card_ids = request.form.getlist("card_ids[]", type=int)
+            cat_cards_for_rag = []
             for cid in card_ids:
-                if db.session.get(Card, cid):
+                c = db.session.get(Card, cid)
+                if c:
                     db.session.add(CategoryCard(card_id=cid, category_id=cat.id))
+                    cat_cards_for_rag.append(_card_rag_dict(c))
             db.session.commit()
+            if cat_cards_for_rag:
+                _call_rag_bg("/build", {"scope": f"category_{cat.id}", "cards": cat_cards_for_rag})
             return redirect(url_for("categories_mine"))
 
         all_cards = db.session.query(Card).order_by(Card.id).all()
@@ -605,6 +686,7 @@ def create_app() -> Flask:
             )
             db.session.add(card)
             db.session.commit()
+            _call_rag_bg("/update_card", _card_rag_dict(card))
             return redirect(url_for("cards_page"))
 
         existing_categories = [
@@ -626,10 +708,15 @@ def create_app() -> Flask:
             db.session.add(cat)
             db.session.flush()
             card_ids = request.form.getlist("card_ids[]", type=int)
+            cat_cards_for_rag = []
             for cid in card_ids:
-                if db.session.get(Card, cid):
+                c = db.session.get(Card, cid)
+                if c:
                     db.session.add(CategoryCard(card_id=cid, category_id=cat.id))
+                    cat_cards_for_rag.append(_card_rag_dict(c))
             db.session.commit()
+            if cat_cards_for_rag:
+                _call_rag_bg("/build", {"scope": f"category_{cat.id}", "cards": cat_cards_for_rag})
             return redirect(url_for("categories"))
         all_cards = db.session.query(Card).order_by(Card.id).all()
         return render_template("new_category.html", all_cards=all_cards, current_card_ids=set())
@@ -638,21 +725,53 @@ def create_app() -> Flask:
     def api_chat():
         data     = request.get_json(silent=True) or {}
         messages = data.get("messages", [])
+        rag_scope = data.get("rag_scope", "none")
+
         if not messages:
             return jsonify({"ok": False, "error": "No messages"}), 400
         valid_roles = {"user", "assistant"}
         for msg in messages:
             if msg.get("role") not in valid_roles or not isinstance(msg.get("content"), str):
                 return jsonify({"ok": False, "error": "Invalid message format"}), 400
+
         api_key = os.environ.get("OPENAI_API_KEY", "")
         if not api_key:
             return jsonify({"ok": False, "error": "Chat is not configured on this server."}), 503
+
+        # ── RAG: получаем релевантные карточки ───────────────────────────────
+        rag_context = ""
+        if rag_scope != "none":
+            last_user = next(
+                (m["content"] for m in reversed(messages) if m["role"] == "user"), ""
+            )
+            if last_user:
+                rag_result = _call_rag(
+                    "/search",
+                    {"query": last_user, "scope": rag_scope, "k": 5},
+                    timeout=10,
+                )
+                docs = (rag_result or {}).get("docs", [])
+                if docs:
+                    lines = ["\n\nРелевантные карточки из базы знаний:"]
+                    for i, doc in enumerate(docs, 1):
+                        front = doc.get("front_content", "").strip()
+                        back  = doc.get("back_content", "").strip()
+                        ans   = doc.get("answer_text", "").strip()
+                        lines.append(f"\n[{i}] Вопрос: {front}")
+                        if back:
+                            lines.append(f"    Оборот: {back}")
+                        if ans:
+                            lines.append(f"    Ответ: {ans}")
+                    lines.append("\nИспользуй эти карточки при ответе, если они релевантны.")
+                    rag_context = "\n".join(lines)
+
         try:
             system_prompt = (
                 "Ты — знающий помощник по советской истории. "
                 "Помогай пользователю изучать исторических деятелей СССР: "
                 "биографии, роль в истории, исторический контекст. "
                 "Отвечай на русском языке, в тёплом академическом тоне."
+                + rag_context
             )
             lc_messages = [SystemMessage(content=system_prompt)]
             for msg in messages:
@@ -662,8 +781,8 @@ def create_app() -> Flask:
                     lc_messages.append(AIMessage(content=msg["content"]))
             llm = ChatOpenAI(
                 openai_api_base="https://api.mistral.ai/v1",
-                model="mistral-large-latest", 
-                api_key=api_key
+                model="mistral-large-latest",
+                api_key=api_key,
             )
             response = llm.invoke(lc_messages)
             return jsonify({"ok": True, "reply": response.content})

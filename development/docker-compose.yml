@@ -16,6 +16,24 @@ services:
       retries: 10
       start_period: 10s
 
+  rag:
+    build:
+      context: ../RAG
+      dockerfile: Dockerfile
+    expose:
+      - "8001"
+    environment:
+      MISTRAL_API_KEY: ZvMLZdits0HwToXTM3E9NopLVyQgImAs
+      DATA_DIR: /data
+    volumes:
+      - ../RAG/data:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8001/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   web:
     build:
       context: ..
@@ -25,10 +43,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      rag:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://user:pass@db:5432/appdb
       SECRET_KEY: dev-secret-key
       OPENAI_API_KEY: ZvMLZdits0HwToXTM3E9NopLVyQgImAs
+      RAG_URL: http://rag:8001
     volumes:
       - ../static/images:/app/static/images
     healthcheck:

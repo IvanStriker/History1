@@ -678,6 +678,11 @@ document.addEventListener('keydown', (e) => {
 async function finishTraining() {
   if (state.isLoading) return;
 
+  if ($body.dataset.authenticated !== 'true') {
+    window.location.href = '/home';
+    return;
+  }
+
   const results = CARD_INDICES.map((cardId, idx) => {
     const answer = state.userAnswers[idx];
     return {

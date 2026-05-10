@@ -256,12 +256,20 @@ document.addEventListener('DOMContentLoaded', function () {
     msgsEl.appendChild(typingEl);
     msgsEl.scrollTop = msgsEl.scrollHeight;
 
+    var ragScopeEl = document.getElementById('chat-rag-scope');
+    var ragScope   = ragScopeEl ? ragScopeEl.value : 'none';
+
     fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: chatHistory }),
+      body: JSON.stringify({ messages: chatHistory, rag_scope: ragScope }),
     })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      if (!r.ok) {
+        return { ok: false, error: 'Сервер вернул ошибку ' + r.status + '. Попробуйте позже.' };
+      }
+      return r.json();
+    })
     .then(function (data) {
       var t = document.getElementById('chat-typing-indicator');
       if (t) t.remove();

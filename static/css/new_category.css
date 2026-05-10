@@ -1,6 +1,11 @@
 /* ═══════════════════════════════════════════
-   new_category.css — Стили пикера карточек
+   new_category.css — Пикер карточек (полный вид)
    ═══════════════════════════════════════════ */
+
+/* Расширяем форму для пикера */
+.new-item-form {
+  max-width: 920px;
+}
 
 .card-picker {
   width: 100%;
@@ -30,7 +35,7 @@
   font-family: var(--font-body);
   font-size: 0.82rem;
   color: var(--parchment);
-  max-width: 220px;
+  max-width: 260px;
 }
 
 .card-picker__chip-text {
@@ -53,9 +58,9 @@
 
 .card-picker__chip-remove:hover { color: #e07070; }
 
-/* ── Список карточек для выбора ───────────── */
+/* ── Список карточек ──────────────────────── */
 .card-picker__list {
-  max-height: 260px;
+  max-height: 480px;
   overflow-y: auto;
   border: 1px solid rgba(201, 168, 76, 0.2);
   border-radius: 3px;
@@ -70,49 +75,113 @@
   opacity: 0.5;
 }
 
+/* ── Одна строка-карточка в пикере ─────────── */
 .card-picker__item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0.8rem;
+  gap: 0.5rem;
+  padding: 0.6rem 0.7rem;
   border-bottom: 1px solid rgba(201, 168, 76, 0.08);
   transition: background 0.15s;
 }
 
 .card-picker__item:last-child { border-bottom: none; }
-.card-picker__item:hover { background: rgba(201, 168, 76, 0.05); }
+.card-picker__item:hover { background: rgba(201, 168, 76, 0.04); }
 
 .card-picker__item--selected {
-  opacity: 0.4;
+  opacity: 0.35;
   pointer-events: none;
 }
 
-.card-picker__item-text {
+/* ── Две стороны карточки ─────────────────── */
+.card-picker__faces {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-picker__face {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.65rem;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 64px;
+}
+
+.card-picker__face--front {
+  background: #1a150d;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+}
+
+.card-picker__face--back {
+  background: #0e0b07;
+  border: 1px solid rgba(201, 168, 76, 0.13);
+}
+
+.card-picker__face-label {
+  font-family: var(--font-display);
+  font-size: 0.48rem;
+  letter-spacing: 0.22em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+  padding-bottom: 0.25rem;
+  flex-shrink: 0;
+}
+
+.card-picker__face-text {
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--parchment);
+  line-height: 1.45;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.card-picker__face-placeholder {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--parchment-dim);
+  opacity: 0.6;
+}
+
+.card-picker__face-answer {
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  color: var(--gold-primary);
+  letter-spacing: 0.07em;
+  border-top: 1px solid rgba(201, 168, 76, 0.12);
+  padding-top: 0.25rem;
+  margin-top: auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
 }
 
+/* ── Кнопка добавления ────────────────────── */
 .card-picker__add-btn {
   background: none;
   border: 1px solid var(--gold-dim);
   border-radius: 2px;
   color: var(--gold-dim);
-  font-size: 1rem;
-  width: 24px;
-  height: 24px;
+  font-size: 1.2rem;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
   flex-shrink: 0;
-  margin-left: 0.6rem;
   transition: color 0.15s, border-color 0.15s;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: center;
 }
 
 .card-picker__add-btn:hover {

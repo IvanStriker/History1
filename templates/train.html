@@ -27,7 +27,7 @@
   class="page-train"  — отключает отступ под таббар из base.css
   data-indices / data-total / data-session — читаются train.js
 #}
-{% block body_attrs %}class="page-train" data-indices='{{ card_indices | tojson }}' data-total="{{ total_questions }}" data-session="{{ session_id }}"{% endblock %}
+{% block body_attrs %}class="page-train" data-indices='{{ card_indices | tojson }}' data-total="{{ total_questions }}" data-session="{{ session_id }}" data-authenticated="{{ 'true' if current_user else 'false' }}"{% endblock %}
 
 {% block navbar %}
   <!-- ╔═══════════════════════════════════════════════════╗

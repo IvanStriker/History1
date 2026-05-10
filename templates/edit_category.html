@@ -15,7 +15,8 @@
   {% for card in all_cards %}
     {% if card.id in current_card_ids %}
     <input type="hidden" name="card_ids[]" value="{{ card.id }}"
-           data-preselected="true" data-text="{{ card.front_content|truncate(80) }}">
+           data-preselected="true"
+           data-text="{{ card.front_content|truncate(80) if card.front_type == 'text' else '[Изображение]' }}">
     {% endif %}
   {% endfor %}
 {% endblock %}

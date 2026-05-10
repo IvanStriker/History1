@@ -178,6 +178,16 @@
         <span>Здравствуйте! Я помогу вам разобраться в истории СССР. Задайте любой вопрос.</span>
       </div>
     </div>
+    <div class="chat-panel__rag-row">
+      <label class="chat-panel__rag-label" for="chat-rag-scope">RAG:</label>
+      <select id="chat-rag-scope" class="chat-panel__rag-select" aria-label="Источник RAG">
+        <option value="none">Без RAG</option>
+        <option value="all_cards">Все карточки</option>
+        {% for cat in all_categories %}
+        <option value="category_{{ cat.id }}">{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
     <div class="chat-panel__input-area">
       <textarea class="chat-panel__input" id="chat-input" rows="2"
                 placeholder="Задайте вопрос историку…" aria-label="Сообщение"></textarea>
