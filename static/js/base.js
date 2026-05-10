@@ -189,7 +189,7 @@ window.addEventListener('DOMContentLoaded', () => {
 /* ═══════════════════════════════════════════════════════════
    CHAT PANEL — Историк-ассистент
    ═══════════════════════════════════════════════════════════ */
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
   if (document.body.classList.contains('page-train')) return;
 
   var toggleBtn = document.getElementById('chat-toggle-btn');
@@ -226,7 +226,11 @@ window.addEventListener('DOMContentLoaded', () => {
   function appendMsg(role, text) {
     var d = document.createElement('div');
     d.className = 'chat-msg chat-msg--' + role;
-    d.textContent = text;
+    if (role === 'assistant') {
+      d.innerHTML = DOMPurify.sanitize(marked.parse(text));
+    } else {
+      d.textContent = text;
+    }
     msgsEl.appendChild(d);
     msgsEl.scrollTop = msgsEl.scrollHeight;
     return d;
@@ -320,4 +324,4 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-})();
+});

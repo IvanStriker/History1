@@ -117,6 +117,10 @@
   <!-- Phaser 3 -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 
+  <!-- Markdown parser + XSS sanitizer (для чата) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@13/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+
   <!-- Базовый JS: фоновая анимация (работает на всех страницах) -->
   <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 

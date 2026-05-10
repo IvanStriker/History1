@@ -660,7 +660,11 @@ def create_app() -> Flask:
                     lc_messages.append(HumanMessage(content=msg["content"]))
                 else:
                     lc_messages.append(AIMessage(content=msg["content"]))
-            llm = ChatOpenAI(model="gpt-4o-mini", api_key=api_key, max_tokens=1024)
+            llm = ChatOpenAI(
+                openai_api_base="https://api.mistral.ai/v1",
+                model="mistral-large-latest", 
+                api_key=api_key
+            )
             response = llm.invoke(lc_messages)
             return jsonify({"ok": True, "reply": response.content})
         except Exception as e:
