@@ -23,6 +23,32 @@
               rows="4" required placeholder="Опишите подборку...">{% block val_description %}{% endblock %}</textarea>
   </div>
 
+  {% block card_picker %}
+  <div class="new-item-field card-picker" id="card-picker">
+    <span class="new-item-label">Карточки в подборке</span>
+
+    <input type="text" id="card-search" class="new-item-input card-picker__search"
+           placeholder="Поиск карточек…" autocomplete="off" />
+
+    <div class="card-picker__chips" id="card-chips"></div>
+
+    <div class="card-picker__list" id="card-list">
+      {% for card in all_cards %}
+      <div class="card-picker__item {% if card.id in current_card_ids %}card-picker__item--selected{% endif %}"
+           data-id="{{ card.id }}"
+           data-text="{{ card.front_content|truncate(80) }}">
+        <span class="card-picker__item-text">{{ card.front_content|truncate(80) }}</span>
+        <button type="button" class="card-picker__add-btn" aria-label="Добавить карточку">+</button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div id="card-hidden-inputs">
+      {% block card_preselected_inputs %}{% endblock %}
+    </div>
+  </div>
+  {% endblock %}
+
 {% endblock %}
 
 {% block new_item_scripts %}

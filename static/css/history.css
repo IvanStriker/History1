@@ -4,29 +4,62 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  --bg-base:      #080604;
-  --bg-surface:   #100d08;
-  --bg-panel:     #130f09;
-  --gold-primary: #c9a84c;
-  --gold-dim:     #8b6914;
-  --gold-glow:    rgba(201, 168, 76, 0.14);
-  --parchment:    #e8d5a3;
-  --parchment-dim:#b8a07a;
+  --bg-base:        #080604;
+  --bg-surface:     #100d08;
+  --gold-primary:   #c9a84c;
+  --gold-dim:       #8b6914;
+  --gold-glow:      rgba(201, 168, 76, 0.18);
+  --parchment:      #e8d5a3;
+  --parchment-dim:  #b8a07a;
+  --ink:            #4a3728;
+  --green-accent:   #4caf7d;
 
-  --font-display: 'Cinzel Decorative', serif;
-  --font-body:    'EB Garamond', serif;
+  --font-display:   'Cinzel Decorative', serif;
+  --font-body:      'EB Garamond', serif;
 }
 
 .history-page {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   min-height: 100vh;
   padding: 3rem 1.5rem 4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--bg-base);
   color: var(--parchment);
+}
+
+/* ── Назад к профилю ──────────────────────── */
+.cat-back-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--parchment-dim);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  margin-bottom: 2.5rem;
+  transition: color 0.2s;
+}
+
+.cat-back-link:hover { color: var(--gold-primary); }
+
+.cat-back-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── Кликабельная карточка тренировки ─────── */
+.history-card--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 /* ── Заголовок ────────────────────────────── */

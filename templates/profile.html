@@ -15,6 +15,14 @@
 
   {% if current_user %}
 
+  {% if current_user.is_admin %}
+  <div class="profile-crown" aria-label="Администратор" title="Администратор">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 16L3 6l5.5 4L12 4l3.5 6L21 6l-2 10H5zm2 2h10v2H7v-2z"/>
+    </svg>
+  </div>
+  {% endif %}
+
   <div class="profile-card">
     <div class="profile-avatar" aria-hidden="true">
       <svg viewBox="0 0 24 24">
@@ -34,6 +42,13 @@
     <form method="POST" action="/logout" class="profile-logout">
       <button type="submit" class="btn-logout">Выйти</button>
     </form>
+
+    <button type="button" class="btn-settings-open" id="settingsOpenBtn" aria-label="Настройки профиля">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54A.484.484 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.476.476 0 0 0-.59.22L2.63 8.54a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.49.42h4c.25 0 .46-.18.49-.42l.36-2.54a6.99 6.99 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+      </svg>
+      Настройки
+    </button>
   </div>
 
   <div class="profile-create-btns">
@@ -64,6 +79,70 @@
   {% endif %}
 
 </main>
+
+{% if current_user %}
+<div id="profile-settings-overlay" class="ps-overlay" role="dialog" aria-modal="true"
+     aria-labelledby="ps-modal-title">
+  <div class="ps-modal">
+    <h2 class="ps-modal__title" id="ps-modal-title">Настройки профиля</h2>
+    <div class="ps-modal__ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+    <form id="profile-settings-form" class="ps-form" novalidate>
+      <div class="ps-form__row">
+        <div class="ps-form__field">
+          <label class="ps-form__label" for="ps-first-name">Имя</label>
+          <input class="ps-form__input" type="text" id="ps-first-name" name="first_name"
+                 value="{{ current_user.first_name }}" autocomplete="given-name">
+        </div>
+        <div class="ps-form__field">
+          <label class="ps-form__label" for="ps-last-name">Фамилия</label>
+          <input class="ps-form__input" type="text" id="ps-last-name" name="last_name"
+                 value="{{ current_user.last_name }}" autocomplete="family-name">
+        </div>
+      </div>
+
+      <div class="ps-form__field">
+        <label class="ps-form__label" for="ps-username">Имя пользователя</label>
+        <input class="ps-form__input" type="text" id="ps-username" name="username"
+               value="{{ current_user.username }}" autocomplete="username">
+      </div>
+
+      <div class="ps-form__field">
+        <label class="ps-form__label" for="ps-email">Email</label>
+        <input class="ps-form__input" type="email" id="ps-email" name="email"
+               value="{{ current_user.email }}" autocomplete="email">
+      </div>
+
+      <div class="ps-form__field">
+        <label class="ps-form__label" for="ps-bio">Биография</label>
+        <textarea class="ps-form__textarea" id="ps-bio" name="bio"
+                  rows="3">{{ current_user.bio or '' }}</textarea>
+      </div>
+
+      <div class="ps-form__separator"></div>
+
+      <div class="ps-form__field">
+        <label class="ps-form__label" for="ps-new-password">Новый пароль (оставьте пустым, чтобы не менять)</label>
+        <input class="ps-form__input" type="password" id="ps-new-password" name="new_password"
+               autocomplete="new-password">
+      </div>
+
+      <div class="ps-form__field">
+        <label class="ps-form__label" for="ps-confirm-password">Подтвердите пароль</label>
+        <input class="ps-form__input" type="password" id="ps-confirm-password" name="confirm_password"
+               autocomplete="new-password">
+      </div>
+
+      <div class="ps-form__error" id="ps-error" aria-live="polite"></div>
+
+      <div class="ps-form__actions">
+        <button type="submit" class="ps-btn ps-btn--save">Сохранить</button>
+        <button type="button" class="ps-btn ps-btn--cancel" id="settingsCancelBtn">Отмена</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

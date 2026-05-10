@@ -1,1 +1,121 @@
-/* new_category.css — дополнительные стили не требуются */
+/* ═══════════════════════════════════════════
+   new_category.css — Стили пикера карточек
+   ═══════════════════════════════════════════ */
+
+.card-picker {
+  width: 100%;
+}
+
+.card-picker__search {
+  margin-bottom: 0.6rem;
+}
+
+/* ── Чипсы выбранных карточек ─────────────── */
+.card-picker__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-height: 28px;
+  margin-bottom: 0.6rem;
+}
+
+.card-picker__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid var(--gold-dim);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--parchment);
+  max-width: 220px;
+}
+
+.card-picker__chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-picker__chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--parchment-dim);
+  font-size: 0.9rem;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.card-picker__chip-remove:hover { color: #e07070; }
+
+/* ── Список карточек для выбора ───────────── */
+.card-picker__list {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 3px;
+  background: rgba(8, 6, 4, 0.4);
+}
+
+.card-picker__list::-webkit-scrollbar { width: 6px; }
+.card-picker__list::-webkit-scrollbar-track { background: transparent; }
+.card-picker__list::-webkit-scrollbar-thumb {
+  background: var(--gold-dim);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+.card-picker__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+  transition: background 0.15s;
+}
+
+.card-picker__item:last-child { border-bottom: none; }
+.card-picker__item:hover { background: rgba(201, 168, 76, 0.05); }
+
+.card-picker__item--selected {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.card-picker__item-text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--parchment);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.card-picker__add-btn {
+  background: none;
+  border: 1px solid var(--gold-dim);
+  border-radius: 2px;
+  color: var(--gold-dim);
+  font-size: 1rem;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 0.6rem;
+  transition: color 0.15s, border-color 0.15s;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-picker__add-btn:hover {
+  color: var(--gold-primary);
+  border-color: var(--gold-primary);
+}

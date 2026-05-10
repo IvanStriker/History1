@@ -185,3 +185,139 @@ window.addEventListener('DOMContentLoaded', () => {
 
   new Phaser.Game(config);
 });
+
+/* ═══════════════════════════════════════════════════════════
+   CHAT PANEL — Историк-ассистент
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  if (document.body.classList.contains('page-train')) return;
+
+  var toggleBtn = document.getElementById('chat-toggle-btn');
+  var closeBtn  = document.getElementById('chat-close-btn');
+  var panel     = document.getElementById('chat-panel');
+  var msgsEl    = document.getElementById('chat-messages');
+  var inputEl   = document.getElementById('chat-input');
+  var sendBtn   = document.getElementById('chat-send-btn');
+  var handle    = document.getElementById('chat-resize-handle');
+
+  if (!toggleBtn || !panel) return;
+
+  var chatHistory = [];
+
+  /* ── Открыть / Закрыть ──────────────────── */
+  function openChat() {
+    document.body.classList.add('chat-open');
+    panel.setAttribute('aria-hidden', 'false');
+    if (inputEl) inputEl.focus();
+  }
+
+  function closeChat() {
+    document.body.classList.remove('chat-open');
+    panel.setAttribute('aria-hidden', 'true');
+  }
+
+  toggleBtn.addEventListener('click', function () {
+    document.body.classList.contains('chat-open') ? closeChat() : openChat();
+  });
+
+  closeBtn.addEventListener('click', closeChat);
+
+  /* ── Добавить пузырёк сообщения ─────────── */
+  function appendMsg(role, text) {
+    var d = document.createElement('div');
+    d.className = 'chat-msg chat-msg--' + role;
+    d.textContent = text;
+    msgsEl.appendChild(d);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    return d;
+  }
+
+  /* ── Отправить сообщение ─────────────────── */
+  function sendMessage() {
+    var text = inputEl ? inputEl.value.trim() : '';
+    if (!text) return;
+
+    inputEl.value = '';
+    if (inputEl.style) inputEl.style.height = '';
+
+    appendMsg('user', text);
+    chatHistory.push({ role: 'user', content: text });
+
+    sendBtn.disabled = true;
+
+    var typingEl = document.createElement('div');
+    typingEl.className = 'chat-msg chat-msg--typing';
+    typingEl.id = 'chat-typing-indicator';
+    typingEl.textContent = 'Историк пишет…';
+    msgsEl.appendChild(typingEl);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory }),
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var t = document.getElementById('chat-typing-indicator');
+      if (t) t.remove();
+      sendBtn.disabled = false;
+      if (data.ok) {
+        appendMsg('assistant', data.reply);
+        chatHistory.push({ role: 'assistant', content: data.reply });
+      } else {
+        appendMsg('assistant', 'Ошибка: ' + (data.error || 'нет ответа'));
+      }
+    })
+    .catch(function () {
+      var t = document.getElementById('chat-typing-indicator');
+      if (t) t.remove();
+      sendBtn.disabled = false;
+      appendMsg('assistant', 'Сетевая ошибка. Попробуйте позже.');
+    });
+  }
+
+  if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+
+  if (inputEl) {
+    inputEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    inputEl.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+  }
+
+  /* ── Перетаскивание левого края ─────────── */
+  if (handle) {
+    var dragging = false;
+    var startX, startW;
+
+    handle.addEventListener('mousedown', function (e) {
+      dragging = true;
+      startX   = e.clientX;
+      startW   = panel.offsetWidth;
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      var delta = startX - e.clientX;
+      var w = Math.max(260, Math.min(600, startW + delta));
+      document.documentElement.style.setProperty('--chat-width', w + 'px');
+    });
+
+    document.addEventListener('mouseup', function () {
+      if (dragging) {
+        dragging = false;
+        document.body.style.userSelect = '';
+      }
+    });
+  }
+})();

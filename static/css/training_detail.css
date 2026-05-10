@@ -1,0 +1,141 @@
+/* ═══════════════════════════════════════════
+   training_detail.css — Детали одной тренировки
+   ═══════════════════════════════════════════ */
+
+/* ── Сводка ───────────────────────────────── */
+.td-summary {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 720px;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem 2rem;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 4px;
+  background: rgba(201, 168, 76, 0.03);
+}
+
+.td-summary__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.td-summary__label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--parchment-dim);
+  text-transform: uppercase;
+}
+
+.td-summary__val {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  color: var(--parchment);
+}
+
+.td-summary__val--score {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--gold-primary);
+  letter-spacing: 0.06em;
+}
+
+/* ── Список карточек ──────────────────────── */
+.td-list {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.td-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-left-width: 3px;
+  border-radius: 4px;
+  background: rgba(201, 168, 76, 0.02);
+}
+
+.td-card--correct { border-left-color: #4caf7d; }
+.td-card--wrong   { border-left-color: #e07070; }
+
+.td-card__indicator {
+  font-size: 1.3rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+  padding-top: 2px;
+  line-height: 1;
+}
+
+.td-card--correct .td-card__indicator { color: #4caf7d; }
+.td-card--wrong   .td-card__indicator { color: #e07070; }
+
+.td-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.td-card__section-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.td-card__text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--parchment);
+  line-height: 1.55;
+}
+
+.td-card__img {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 3px;
+  object-fit: contain;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+}
+
+.td-card__answers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.td-card__answer-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.td-card__answer-val {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.td-card__answer-val--correct { color: #4caf7d; }
+.td-card__answer-val--wrong   { color: #e07070; }
+
+@media (max-width: 520px) {
+  .td-card { padding: 1rem 1.1rem; }
+  .td-summary { gap: 1.2rem; padding: 1.2rem; }
+}

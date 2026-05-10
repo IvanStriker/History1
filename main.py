@@ -14,12 +14,15 @@ import os
 import uuid
 from random import sample
 
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+
 from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_migrate import Migrate, upgrade as db_upgrade
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-from models import Card, Category, User, Training, TrainingCard, db
+from models import Card, Category, CategoryCard, User, Training, TrainingCard, db
 
 _ALLOWED_IMAGE_EXT = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'}
 
@@ -129,6 +132,29 @@ def create_app() -> Flask:
 
         return render_template("history.html", trainings=trainings)
     
+    @app.route("/history/<int:training_id>")
+    def history_detail(training_id):
+        if "user_id" not in session:
+            return redirect(url_for("sign_in"))
+        training = db.session.get(Training, training_id)
+        if not training:
+            abort(404, "Тренировка не найдена.")
+        if training.user_id != session["user_id"]:
+            abort(403, "Нет доступа.")
+        detail_cards = []
+        for tc in training.cards:
+            card = tc.card
+            front_content = card.front_content
+            if card.front_type == "image":
+                front_content = url_for("static", filename=front_content.replace("./", ""))
+            detail_cards.append({
+                "tc":            tc,
+                "front_type":    card.front_type,
+                "front_content": front_content,
+                "answer_text":   card.answer_text,
+            })
+        return render_template("training_detail.html", training=training, detail_cards=detail_cards)
+
     @app.route("/train/complete", methods=["POST"])
     def train_complete():
         if "user_id" not in session:
@@ -195,7 +221,8 @@ def create_app() -> Flask:
         card = db.session.get(Card, card_id)
         if not card:
             abort(404, "Карточка не найдена.")
-        if card.user_id != session["user_id"]:
+        _u = db.session.get(User, session["user_id"])
+        if card.user_id != session["user_id"] and not (_u and _u.is_admin):
             abort(403, "Нет доступа.")
 
         if request.method == "POST":
@@ -267,7 +294,8 @@ def create_app() -> Flask:
         cat = db.session.get(Category, category_id)
         if not cat:
             abort(404, "Подборка не найдена.")
-        if cat.creator_id != session["user_id"]:
+        _u = db.session.get(User, session["user_id"])
+        if cat.creator_id != session["user_id"] and not (_u and _u.is_admin):
             abort(403, "Нет доступа.")
 
         if request.method == "POST":
@@ -278,10 +306,18 @@ def create_app() -> Flask:
                 return redirect(url_for("categories_edit", category_id=category_id))
             cat.name        = name
             cat.description = description
+            db.session.query(CategoryCard).filter_by(category_id=cat.id).delete()
+            card_ids = request.form.getlist("card_ids[]", type=int)
+            for cid in card_ids:
+                if db.session.get(Card, cid):
+                    db.session.add(CategoryCard(card_id=cid, category_id=cat.id))
             db.session.commit()
             return redirect(url_for("categories_mine"))
 
-        return render_template("edit_category.html", category=cat)
+        all_cards = db.session.query(Card).order_by(Card.id).all()
+        current_card_ids = {ce.card_id for ce in cat.card_entries.all()}
+        return render_template("edit_category.html", category=cat,
+                               all_cards=all_cards, current_card_ids=current_card_ids)
 
     @app.route("/cards/delete", methods=["DELETE"])
     def cards_delete():
@@ -291,7 +327,8 @@ def create_app() -> Flask:
         card = db.session.get(Card, data.get("id"))
         if not card:
             return jsonify({"ok": False}), 404
-        if card.user_id != session["user_id"]:
+        _u = db.session.get(User, session["user_id"])
+        if card.user_id != session["user_id"] and not (_u and _u.is_admin):
             return jsonify({"ok": False}), 403
         db.session.delete(card)
         db.session.commit()
@@ -305,7 +342,8 @@ def create_app() -> Flask:
         cat  = db.session.get(Category, data.get("id"))
         if not cat:
             return jsonify({"ok": False}), 404
-        if cat.creator_id != session["user_id"]:
+        _u = db.session.get(User, session["user_id"])
+        if cat.creator_id != session["user_id"] and not (_u and _u.is_admin):
             return jsonify({"ok": False}), 403
         db.session.delete(cat)
         db.session.commit()
@@ -586,9 +624,70 @@ def create_app() -> Flask:
                 return redirect(url_for("new_category"))
             cat = Category(name=name, description=description, creator_id=session["user_id"])
             db.session.add(cat)
+            db.session.flush()
+            card_ids = request.form.getlist("card_ids[]", type=int)
+            for cid in card_ids:
+                if db.session.get(Card, cid):
+                    db.session.add(CategoryCard(card_id=cid, category_id=cat.id))
             db.session.commit()
             return redirect(url_for("categories"))
-        return render_template("new_category.html")
+        all_cards = db.session.query(Card).order_by(Card.id).all()
+        return render_template("new_category.html", all_cards=all_cards, current_card_ids=set())
+
+    @app.route("/api/chat", methods=["POST"])
+    def api_chat():
+        data     = request.get_json(silent=True) or {}
+        messages = data.get("messages", [])
+        if not messages:
+            return jsonify({"ok": False, "error": "No messages"}), 400
+        valid_roles = {"user", "assistant"}
+        for msg in messages:
+            if msg.get("role") not in valid_roles or not isinstance(msg.get("content"), str):
+                return jsonify({"ok": False, "error": "Invalid message format"}), 400
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            return jsonify({"ok": False, "error": "Chat is not configured on this server."}), 503
+        try:
+            system_prompt = (
+                "Ты — знающий помощник по советской истории. "
+                "Помогай пользователю изучать исторических деятелей СССР: "
+                "биографии, роль в истории, исторический контекст. "
+                "Отвечай на русском языке, в тёплом академическом тоне."
+            )
+            lc_messages = [SystemMessage(content=system_prompt)]
+            for msg in messages:
+                if msg["role"] == "user":
+                    lc_messages.append(HumanMessage(content=msg["content"]))
+                else:
+                    lc_messages.append(AIMessage(content=msg["content"]))
+            llm = ChatOpenAI(model="gpt-4o-mini", api_key=api_key, max_tokens=1024)
+            response = llm.invoke(lc_messages)
+            return jsonify({"ok": True, "reply": response.content})
+        except Exception as e:
+            return jsonify({"ok": False, "error": str(e)}), 502
+
+    @app.route("/api/profile/update", methods=["POST"])
+    def api_profile_update():
+        if "user_id" not in session:
+            return jsonify({"ok": False, "error": "Unauthorized"}), 401
+        data = request.get_json(silent=True) or {}
+        user = db.session.get(User, session["user_id"])
+        if not user:
+            return jsonify({"ok": False, "error": "Not found"}), 404
+        for field in ("first_name", "last_name", "username", "email"):
+            val = data.get(field, "").strip()
+            if val:
+                setattr(user, field, val)
+        user.bio = data.get("bio", "").strip() or None
+        new_pw = data.get("new_password", "")
+        if new_pw:
+            if len(new_pw) < 8:
+                return jsonify({"ok": False, "error": "Пароль должен содержать не менее 8 символов."}), 400
+            if new_pw != data.get("confirm_password", ""):
+                return jsonify({"ok": False, "error": "Пароли не совпадают."}), 400
+            user.password = generate_password_hash(new_pw)
+        db.session.commit()
+        return jsonify({"ok": True})
 
     # ── Обработчики ошибок ────────────────────────────────────────────────────
 

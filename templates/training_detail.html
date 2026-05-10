@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Детали тренировки — Историческая игра{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}?v=2" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/training_detail.css') }}" />
+{% endblock %}
+
+{% block body_content %}
+<main class="history-page">
+
+  <a href="/history" class="cat-back-link">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </svg>
+    Назад к истории
+  </a>
+
+  <h1 class="history-title">Детали тренировки</h1>
+  <div class="profile-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="profile-rule"></div>
+
+  <!-- Сводка -->
+  <div class="td-summary">
+    <div class="td-summary__item">
+      <span class="td-summary__label">Дата</span>
+      <span class="td-summary__val">
+        {{ training.created_at.strftime('%d.%m.%Y %H:%M') if training.created_at else 'Неизвестно' }}
+      </span>
+    </div>
+    <div class="td-summary__item">
+      <span class="td-summary__label">Результат</span>
+      <span class="td-summary__val td-summary__val--score">
+        {{ training.score }} / {{ training.cards_amount }}
+      </span>
+    </div>
+    <div class="td-summary__item">
+      <span class="td-summary__label">Точность</span>
+      <span class="td-summary__val">
+        {{ ((training.score / training.cards_amount * 100) if training.cards_amount > 0 else 0)|round(1) }}%
+      </span>
+    </div>
+  </div>
+
+  <!-- Разбор по карточкам -->
+  <div class="td-list">
+    {% for item in detail_cards %}
+    <div class="td-card {% if item.tc.is_valid_answer %}td-card--correct{% else %}td-card--wrong{% endif %}">
+
+      <div class="td-card__indicator" aria-hidden="true">
+        {% if item.tc.is_valid_answer %}✓{% else %}✗{% endif %}
+      </div>
+
+      <div class="td-card__body">
+        <div class="td-card__question">
+          <span class="td-card__section-label">Вопрос</span>
+          {% if item.front_type == 'image' %}
+            <img src="{{ item.front_content }}" alt="Вопрос" class="td-card__img" />
+          {% else %}
+            <p class="td-card__text">{{ item.front_content }}</p>
+          {% endif %}
+        </div>
+
+        <div class="td-card__answers">
+          <div class="td-card__answer-row">
+            <span class="td-card__section-label">Ваш ответ</span>
+            <span class="td-card__answer-val {% if item.tc.is_valid_answer %}td-card__answer-val--correct{% else %}td-card__answer-val--wrong{% endif %}">
+              {{ item.tc.user_answer or '(нет ответа)' }}
+            </span>
+          </div>
+          <div class="td-card__answer-row">
+            <span class="td-card__section-label">Верный ответ</span>
+            <span class="td-card__answer-val td-card__answer-val--correct">
+              {{ item.answer_text }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+
+    {% if not detail_cards %}
+    <div class="cat-stub">
+      <p class="cat-stub__text">Карточки этой тренировки не найдены.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</main>
+{% endblock %}

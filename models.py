@@ -54,6 +54,7 @@ class User(db.Model):
     bio            = db.Column(db.Text,    nullable=True)           # len >= 0
     text_size      = db.Column(db.Float,   nullable=True)           # px, напр. 16.0
     heading_scale  = db.Column(db.Float,   nullable=True)           # коэффициент, напр. 1.0
+    is_admin       = db.Column(db.Boolean, nullable=False, default=False)
 
     categories = db.relationship("Category", back_populates="creator",
                                  lazy="dynamic", cascade="all, delete-orphan")
@@ -122,6 +123,8 @@ class Training(db.Model):
         nullable=False,
         default=0
     )
+
+    created_at = db.Column(db.DateTime, nullable=True, server_default=db.func.now())
 
     user = db.relationship(
         "User",

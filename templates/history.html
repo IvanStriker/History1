@@ -24,7 +24,8 @@
   {% if trainings and trainings|length > 0 %}
     <div class="history-list">
       {% for training in trainings %}
-      <div class="history-card">
+      <a href="{{ url_for('history_detail', training_id=training.id) }}"
+         class="history-card history-card--link">
         <div class="history-card__header">
           <span class="history-card__date">
             {{ training.created_at.strftime('%d.%m.%Y %H:%M') if training.created_at else 'Дата неизвестна' }}
@@ -33,12 +34,11 @@
             {{ training.score }} / {{ training.cards_amount }}
           </span>
         </div>
-        
         <div class="history-card__accuracy">
-          Точность: 
+          Точность:
           <strong>{{ ((training.score / training.cards_amount * 100) if training.cards_amount > 0 else 0)|round(1) }}%</strong>
         </div>
-      </div>
+      </a>
       {% endfor %}
     </div>
   {% else %}
