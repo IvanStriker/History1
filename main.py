@@ -16,12 +16,13 @@ import os
 import urllib.request
 import urllib.error
 import uuid
+from datetime import datetime, timezone, timedelta
 from random import sample
 
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
-from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, Response, abort, flash, jsonify, redirect, render_template, request, session, stream_with_context, url_for
 from flask_migrate import Migrate, upgrade as db_upgrade
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -243,10 +244,12 @@ def create_app() -> Flask:
             return jsonify({"ok": False, "error": "No results"}), 400
 
         # Создаём запись тренировки
+        moscow_now = datetime.now(timezone(timedelta(hours=3))).replace(tzinfo=None)
         training = Training(
             user_id=session["user_id"],
             score=sum(1 for r in card_results if r.get("is_correct")),
-            cards_amount=len(card_results)
+            cards_amount=len(card_results),
+            created_at=moscow_now
         )
         db.session.add(training)
         db.session.flush()  # чтобы получить training.id
@@ -567,6 +570,38 @@ def create_app() -> Flask:
             title="Все подборки"
         )
 
+    @app.route("/categories/<int:category_id>/cards")
+    def category_cards(category_id):
+        category = db.session.get(Category, category_id)
+        if not category:
+            abort(404, "Подборка не найдена.")
+        cards_data = []
+        for entry in category.card_entries.all():
+            card = entry.card
+            front_content = card.front_content
+            if card.front_type == "image":
+                front_content = url_for("static", filename=front_content.replace("./", ""))
+            back_content = card.back_content
+            if card.back_type == "image":
+                back_content = url_for("static", filename=back_content.replace("./", ""))
+            cards_data.append({
+                "id":            card.id,
+                "front_type":    card.front_type,
+                "front_content": front_content,
+                "back_type":     card.back_type,
+                "back_content":  back_content,
+                "answer_text":   card.answer_text,
+                "user_id":       card.user_id,
+            })
+        return render_template(
+            "cards.html",
+            cards=cards_data,
+            title=category.name,
+            back_label="К подборкам",
+            back_use_history=True,
+            back_fallback_url=url_for("categories"),
+        )
+
     @app.route("/sign-in", methods=["GET", "POST"])
     def sign_in():
         if request.method == "POST":
@@ -765,29 +800,41 @@ def create_app() -> Flask:
                     lines.append("\nИспользуй эти карточки при ответе, если они релевантны.")
                     rag_context = "\n".join(lines)
 
-        try:
-            system_prompt = (
-                "Ты — знающий помощник по советской истории. "
-                "Помогай пользователю изучать исторических деятелей СССР: "
-                "биографии, роль в истории, исторический контекст. "
-                "Отвечай на русском языке, в тёплом академическом тоне."
-                + rag_context
-            )
-            lc_messages = [SystemMessage(content=system_prompt)]
-            for msg in messages:
-                if msg["role"] == "user":
-                    lc_messages.append(HumanMessage(content=msg["content"]))
-                else:
-                    lc_messages.append(AIMessage(content=msg["content"]))
-            llm = ChatOpenAI(
-                openai_api_base="https://api.mistral.ai/v1",
-                model="mistral-large-latest",
-                api_key=api_key,
-            )
-            response = llm.invoke(lc_messages)
-            return jsonify({"ok": True, "reply": response.content})
-        except Exception as e:
-            return jsonify({"ok": False, "error": str(e)}), 502
+        system_prompt = (
+            "Ты — знающий помощник по советской истории. "
+            "Помогай пользователю изучать исторических деятелей СССР: "
+            "биографии, роль в истории, исторический контекст. "
+            "Отвечай на русском языке, в тёплом академическом тоне."
+            + rag_context
+        )
+        lc_messages = [SystemMessage(content=system_prompt)]
+        for msg in messages:
+            if msg["role"] == "user":
+                lc_messages.append(HumanMessage(content=msg["content"]))
+            else:
+                lc_messages.append(AIMessage(content=msg["content"]))
+        llm = ChatOpenAI(
+            openai_api_base="https://api.mistral.ai/v1",
+            model="mistral-large-latest",
+            api_key=api_key,
+            streaming=True,
+        )
+
+        def generate():
+            try:
+                for chunk in llm.stream(lc_messages):
+                    text = chunk.content
+                    if text:
+                        yield f"data: {json.dumps({'t': text})}\n\n"
+            except Exception as e:
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            yield "data: [DONE]\n\n"
+
+        return Response(
+            stream_with_context(generate()),
+            content_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
 
     @app.route("/api/profile/update", methods=["POST"])
     def api_profile_update():

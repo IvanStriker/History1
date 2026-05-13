@@ -55,6 +55,28 @@ body::before {
   max-width: 440px;
 }
 
+/* ── Назад ────────────────────────────────── */
+.back-link {
+  position: absolute;
+  top: 3rem;
+  left: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--parchment-dim);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--gold-primary); }
+.back-link svg {
+  width: 18px; height: 18px;
+  fill: currentColor; flex-shrink: 0;
+}
+
 /* ── Орнамент ─────────────────────────────── */
 .sign-ornament {
   font-size: 0.85rem;

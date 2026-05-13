@@ -7,30 +7,48 @@
 {% endblock %}
 
 {% block body_content %}
-  <!-- Шапка -->
-  <header class="cards-header">
-    <a href="/home" class="cards-header__back">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-      </svg>
-      На главную
-    </a>
-    <h1 class="cards-header__title">{{ title|default('Все карточки') }}</h1>
-    <span class="cards-header__count">{{ cards | length }}&nbsp;шт.</span>
-    
-    <a href="/settings" class="cards-header__settings" aria-label="Настройки">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54A.484.484 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.476.476 0 0 0-.59.22L2.63 8.54a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.49.42h4c.25 0 .46-.18.49-.42l.36-2.54a6.99 6.99 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-      </svg>
-    </a>
-  </header>
+  <!-- Шапка страницы -->
+  <div class="cards-page-top">
+    <div class="cards-page-nav">
+      {% if back_use_history %}
+      <a href="{{ back_fallback_url }}" class="cards-back-link" id="js-back-btn">
+      {% else %}
+      <a href="{{ back_url|default('/home') }}" class="cards-back-link">
+      {% endif %}
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        {{ back_label|default('На главную') }}
+      </a>
+      {% if back_use_history %}
+      <script>
+      document.getElementById('js-back-btn').addEventListener('click', function (e) {
+        if (history.length > 1) { e.preventDefault(); history.back(); }
+      });
+      </script>
+      {% endif %}
+    </div>
+    <h1 class="cards-page-title">{{ title|default('Все карточки') }}</h1>
+    <p class="cards-page-count">{{ cards | length }}&nbsp;шт.</p>
+    <div class="cards-page-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
+    <div class="cards-page-rule"></div>
+  </div>
+
+  <!-- Поиск -->
+  <div class="cards-search-bar">
+    <input class="cards-search-bar__input" type="search"
+           id="cards-search" placeholder="Поиск по карточкам…" autocomplete="off">
+  </div>
 
   <!-- Список карточек -->
   <main class="cards-main">
     <div class="container-fluid px-0">
 
       {% for card in cards %}
-      <div class="card-row" id="card-{{ card.id }}">
+      <div class="card-row" id="card-{{ card.id }}"
+           data-front="{{ card.front_content if card.front_type != 'image' else '' }}"
+           data-back="{{ card.back_content if card.back_type != 'image' else '' }}"
+           data-answer="{{ card.answer_text or '' }}">
         
         <!-- Порядковый номер -->
         <span class="card-row__num">{{ loop.index }}</span>
@@ -73,6 +91,7 @@
       </div>
       {% endfor %}
 
+      <p class="cards-no-results" id="cards-no-results" hidden>Карточки не найдены.</p>
     </div>
   </main>
 {% endblock %}

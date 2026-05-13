@@ -36,7 +36,8 @@
       {% for card in all_cards %}
       <div class="card-picker__item {% if card.id in current_card_ids %}card-picker__item--selected{% endif %}"
            data-id="{{ card.id }}"
-           data-text="{{ card.front_content|truncate(80) if card.front_type == 'text' else '[Изображение]' }}"
+           data-text="{{ card.front_content|truncate(80)|e if card.front_type == 'text' else card.answer_text|truncate(80)|e }}"
+           data-is-image="{{ '1' if card.front_type == 'image' else '' }}"
            data-front="{{ card.front_content|truncate(120)|e if card.front_type == 'text' else '' }}"
            data-back="{{ card.back_content|truncate(120)|e if card.back_type == 'text' else '' }}"
            data-answer="{{ card.answer_text|e }}">
@@ -44,7 +45,7 @@
           <div class="card-picker__face card-picker__face--front">
             <div class="card-picker__face-label">Вопрос</div>
             {% if card.front_type == 'image' %}
-              <span class="card-picker__face-placeholder">[Изображение]</span>
+              <img src="{{ url_for('static', filename=card.front_content) }}" alt="Изображение" class="card-picker__face-img" />
             {% else %}
               <span class="card-picker__face-text">{{ card.front_content|truncate(120) }}</span>
             {% endif %}
@@ -52,7 +53,7 @@
           <div class="card-picker__face card-picker__face--back">
             <div class="card-picker__face-label">Ответ</div>
             {% if card.back_type == 'image' %}
-              <span class="card-picker__face-placeholder">[Изображение]</span>
+              <img src="{{ url_for('static', filename=card.back_content) }}" alt="Изображение" class="card-picker__face-img" />
             {% else %}
               <span class="card-picker__face-text">{{ card.back_content|truncate(120) }}</span>
             {% endif %}

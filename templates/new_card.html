@@ -15,7 +15,7 @@
     <label class="new-item-label" for="category">Категория</label>
     <input class="new-item-input" type="text" id="category" name="category"
            list="category-options" autocomplete="off" required
-           placeholder="Введите или выберите категорию"
+           placeholder="Введите категорию"
            value="{% block val_category %}{% endblock %}">
     <datalist id="category-options">
       {% for cat in existing_categories %}

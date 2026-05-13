@@ -204,6 +204,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var chatHistory = [];
 
+  /* ── Восстановить историю из sessionStorage ─ */
+  (function () {
+    var saved = sessionStorage.getItem('chatHistory');
+    if (!saved) return;
+    try {
+      chatHistory = JSON.parse(saved);
+      chatHistory.forEach(function (m) { appendMsg(m.role, m.content); });
+    } catch (e) { chatHistory = []; }
+  }());
+
   /* ── Открыть / Закрыть ──────────────────── */
   function openChat() {
     document.body.classList.add('chat-open');
@@ -222,6 +232,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   closeBtn.addEventListener('click', closeChat);
 
+  var clearBtn = document.getElementById('chat-clear-btn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      chatHistory = [];
+      sessionStorage.removeItem('chatHistory');
+      msgsEl.innerHTML = '<div class="chat-msg chat-msg--assistant"><span>Здравствуйте! Я помогу вам разобраться в истории СССР. Задайте любой вопрос.</span></div>';
+    });
+  }
+
   /* ── Добавить пузырёк сообщения ─────────── */
   function appendMsg(role, text) {
     var d = document.createElement('div');
@@ -237,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ── Отправить сообщение ─────────────────── */
-  function sendMessage() {
+  async function sendMessage() {
     var text = inputEl ? inputEl.value.trim() : '';
     if (!text) return;
 
@@ -246,6 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     appendMsg('user', text);
     chatHistory.push({ role: 'user', content: text });
+    sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
 
     sendBtn.disabled = true;
 
@@ -259,34 +279,63 @@ document.addEventListener('DOMContentLoaded', function () {
     var ragScopeEl = document.getElementById('chat-rag-scope');
     var ragScope   = ragScopeEl ? ragScopeEl.value : 'none';
 
-    fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: chatHistory, rag_scope: ragScope }),
-    })
-    .then(function (r) {
-      if (!r.ok) {
-        return { ok: false, error: 'Сервер вернул ошибку ' + r.status + '. Попробуйте позже.' };
-      }
-      return r.json();
-    })
-    .then(function (data) {
-      var t = document.getElementById('chat-typing-indicator');
-      if (t) t.remove();
+    try {
+      var r = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory, rag_scope: ragScope }),
+      });
+
+      var typing = document.getElementById('chat-typing-indicator');
+      if (typing) typing.remove();
       sendBtn.disabled = false;
-      if (data.ok) {
-        appendMsg('assistant', data.reply);
-        chatHistory.push({ role: 'assistant', content: data.reply });
-      } else {
-        appendMsg('assistant', 'Ошибка: ' + (data.error || 'нет ответа'));
+
+      if (!r.ok) {
+        appendMsg('assistant', 'Ошибка: сервер вернул ' + r.status + '. Попробуйте позже.');
+        return;
       }
-    })
-    .catch(function () {
-      var t = document.getElementById('chat-typing-indicator');
-      if (t) t.remove();
+
+      var msgEl   = appendMsg('assistant', '');
+      var fullText = '';
+      var reader   = r.body.getReader();
+      var decoder  = new TextDecoder();
+      var buffer   = '';
+
+      while (true) {
+        var result = await reader.read();
+        if (result.done) break;
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (!line.startsWith('data: ')) continue;
+          var payload = line.slice(6);
+          if (payload === '[DONE]') break;
+          try {
+            var chunk = JSON.parse(payload);
+            if (chunk.error) {
+              msgEl.innerHTML = DOMPurify.sanitize(marked.parse('Ошибка: ' + chunk.error));
+              fullText = '';
+              break;
+            }
+            fullText += chunk.t || '';
+            msgEl.innerHTML = DOMPurify.sanitize(marked.parse(fullText));
+            msgsEl.scrollTop = msgsEl.scrollHeight;
+          } catch (e) {}
+        }
+      }
+
+      if (fullText) {
+        chatHistory.push({ role: 'assistant', content: fullText });
+        sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      }
+    } catch (e) {
+      var typing = document.getElementById('chat-typing-indicator');
+      if (typing) typing.remove();
       sendBtn.disabled = false;
       appendMsg('assistant', 'Сетевая ошибка. Попробуйте позже.');
-    });
+    }
   }
 
   if (sendBtn) sendBtn.addEventListener('click', sendMessage);
@@ -315,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
       startX   = e.clientX;
       startW   = panel.offsetWidth;
       document.body.style.userSelect = 'none';
+      if (toggleBtn) toggleBtn.classList.add('chat-toggle-btn--resizing');
       e.preventDefault();
     });
 
@@ -329,6 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (dragging) {
         dragging = false;
         document.body.style.userSelect = '';
+        if (toggleBtn) toggleBtn.classList.remove('chat-toggle-btn--resizing');
       }
     });
   }

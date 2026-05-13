@@ -487,9 +487,9 @@ async function fetchCard(id) {
 function normalizeAnswer(str) {
   return str
     .toLowerCase()
-    .trim()
-    .replace(/\s+/g, ' ')
-    // убираем знаки препинания по краям
+    .replace(/ё/g, 'е')
+    .replace(/й/g, 'и')
+    .replace(/\s+/g, '')
     .replace(/^[.,!?;:—-]+|[.,!?;:—-]+$/g, '');
 }
 

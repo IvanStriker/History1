@@ -152,6 +152,14 @@
   opacity: 0.6;
 }
 
+.card-picker__face-img {
+  max-width: 100%;
+  max-height: 72px;
+  object-fit: contain;
+  border-radius: 3px;
+  display: block;
+}
+
 .card-picker__face-answer {
   font-family: var(--font-display);
   font-size: 0.58rem;
@@ -187,4 +195,12 @@
 .card-picker__add-btn:hover {
   color: var(--gold-primary);
   border-color: var(--gold-primary);
+}
+
+.card-picker__chip-img-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: var(--gold-dim);
+  vertical-align: middle;
 }

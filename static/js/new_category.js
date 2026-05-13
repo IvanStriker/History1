@@ -11,11 +11,12 @@
   // ── Восстановить предвыбранные (режим редактирования) ──
   var preInputs = hiddenWrap.querySelectorAll('input[data-preselected]');
   preInputs.forEach(function (inp) {
-    var id   = parseInt(inp.value, 10);
-    var text = inp.dataset.text || ('#' + id);
+    var id      = parseInt(inp.value, 10);
+    var text    = inp.dataset.text || ('#' + id);
+    var isImage = inp.dataset.isImage === '1';
     selected[id] = text;
     markItemSelected(id, true);
-    renderChip(id, text);
+    renderChip(id, text, isImage);
   });
 
   // ── Кнопка «+» в списке карточек ──────────
@@ -24,12 +25,13 @@
     if (!btn) return;
     var item = btn.closest('.card-picker__item');
     if (!item) return;
-    var id   = parseInt(item.dataset.id, 10);
-    var text = item.dataset.text || ('#' + id);
+    var id      = parseInt(item.dataset.id, 10);
+    var text    = item.dataset.text || ('#' + id);
+    var isImage = item.dataset.isImage === '1';
     if (selected[id]) return;
     selected[id] = text;
     addHiddenInput(id);
-    renderChip(id, text);
+    renderChip(id, text, isImage);
     markItemSelected(id, true);
   });
 
@@ -71,11 +73,19 @@
     hiddenWrap.appendChild(inp);
   }
 
-  function renderChip(id, text) {
+  function renderChip(id, text, isImage) {
     var chip = document.createElement('span');
     chip.className  = 'card-picker__chip';
     chip.dataset.id = id;
+    var iconHtml = isImage
+      ? '<svg class="card-picker__chip-img-icon" viewBox="0 0 16 16" aria-hidden="true">' +
+        '<rect x="1" y="2" width="14" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+        '<circle cx="5.5" cy="6.5" r="1.2" fill="currentColor"/>' +
+        '<path d="M1.5 11.5l3.5-3.5 2.5 2.5 2-2 4 4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>'
+      : '';
     chip.innerHTML  =
+      iconHtml +
       '<span class="card-picker__chip-text">' + escHtml(text) + '</span>' +
       '<button type="button" class="card-picker__chip-remove" data-id="' + id + '" aria-label="Убрать">×</button>';
     chipsEl.appendChild(chip);

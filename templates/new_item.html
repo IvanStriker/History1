@@ -10,6 +10,19 @@
 {% block body_content %}
 <main class="new-item-page">
 
+  <!-- Назад -->
+  <a href="/home" class="back-link" id="js-new-item-back">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </svg>
+    Назад
+  </a>
+  <script>
+  document.getElementById('js-new-item-back').addEventListener('click', function(e) {
+    if (history.length > 1) { e.preventDefault(); history.back(); }
+  });
+  </script>
+
   <h1 class="new-item-title">{% block item_heading %}Создать{% endblock %}</h1>
   <div class="new-item-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
   <div class="new-item-rule"></div>

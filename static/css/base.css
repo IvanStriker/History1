@@ -274,7 +274,11 @@ body.chat-open .tab-nav {
   justify-content: center;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  transition: border-color 0.2s, box-shadow 0.3s;
+  transition: border-color 0.2s, box-shadow 0.3s, transform 0.3s ease;
+}
+
+body.chat-open .chat-toggle-btn {
+  transform: translateX(calc(6px - var(--chat-width, 340px)));
 }
 
 .chat-toggle-btn svg {
@@ -342,6 +346,7 @@ body.chat-open .chat-panel {
   font-size: 0.85rem;
   letter-spacing: 0.1em;
   color: var(--gold-primary);
+  flex: 1;
 }
 
 .chat-panel__close {
@@ -356,6 +361,22 @@ body.chat-open .chat-panel {
 }
 
 .chat-panel__close:hover { color: var(--gold-primary); }
+
+.chat-panel__clear {
+  background: none;
+  border: none;
+  color: var(--parchment-dim);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.chat-panel__clear:hover { color: var(--gold-primary); }
+
+.chat-toggle-btn--resizing {
+  transition: border-color 0.2s, box-shadow 0.3s;
+}
 
 /* Область сообщений */
 .chat-panel__messages {
@@ -439,6 +460,7 @@ body.chat-open .chat-panel {
   padding: 0.4rem 1rem 0.3rem;
   border-top: 1px solid rgba(201, 168, 76, 0.12);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .chat-panel__rag-label {
@@ -452,6 +474,7 @@ body.chat-open .chat-panel {
 
 .chat-panel__rag-select {
   flex: 1;
+  min-width: 0;
   background: rgba(8, 6, 4, 0.7);
   border: 1px solid rgba(201, 168, 76, 0.22);
   border-radius: 3px;

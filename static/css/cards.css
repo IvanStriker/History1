@@ -41,70 +41,77 @@ body::before {
   opacity: 0.55;
 }
 
-/* ── Header ──────────────────────────────── */
-.cards-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: linear-gradient(180deg, #0e0b07 0%, rgba(14, 11, 7, 0.97) 100%);
-  border-bottom: 1px solid var(--gold-dim);
-  padding: 0 1.5rem;
+/* ── Page Top ────────────────────────────── */
+.cards-page-top {
+  position: relative;
+  z-index: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  height: 60px;
+  padding: 3rem 1.5rem 0;
 }
 
-.cards-header__back {
+.cards-page-nav {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.cards-back-link {
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: var(--gold-dim);
-  text-decoration: none;
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  transition: color 0.2s;
-}
-.cards-header__back:hover { color: var(--gold-primary); }
-.cards-header__back svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-  flex-shrink: 0;
-}
-
-.cards-header__title {
-  flex: 1;
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: clamp(0.8rem, 2vw, 1.1rem);
-  color: var(--gold-primary);
-  letter-spacing: 0.1em;
-}
-
-.cards-header__count {
   font-family: var(--font-body);
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--parchment-dim);
-  white-space: nowrap;
-}
-
-.cards-header__settings {
-  display: flex;
-  align-items: center;
-  color: var(--gold-dim);
   text-decoration: none;
+  letter-spacing: 0.04em;
   transition: color 0.2s;
-  flex-shrink: 0;
 }
-.cards-header__settings:hover { color: var(--gold-primary); }
-.cards-header__settings svg {
+.cards-back-link:hover { color: var(--gold-primary); }
+.cards-back-link svg {
   width: 18px;
   height: 18px;
   fill: currentColor;
+  flex-shrink: 0;
+}
+
+.cards-page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--gold-primary);
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.35);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.cards-page-count {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--parchment-dim);
+  margin-bottom: 0.8rem;
+}
+
+.cards-page-ornament {
+  font-size: 0.9rem;
+  letter-spacing: 0.6em;
+  color: var(--gold-primary);
+  opacity: 0.5;
+  margin-bottom: 0.8rem;
+}
+
+.cards-page-rule {
+  width: 100%;
+  max-width: 420px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim) 30%, var(--gold-primary) 50%, var(--gold-dim) 70%, transparent);
+  margin-bottom: 2rem;
 }
 
 /* ── Main ────────────────────────────────── */
@@ -228,19 +235,6 @@ body::before {
   transform: scale(1.15);
 }
 
-/* Кнопка в шапке */
-.cards-header__edit {
-  color: var(--gold-dim);
-  font-size: 1.1rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: color 0.2s;
-}
-
-.cards-header__edit:hover {
-  color: var(--gold-primary);
-}
-
 .card-delete-btn {
   position: absolute;
   bottom: 12px;
@@ -277,6 +271,44 @@ body::before {
 }
 
 @media (max-width: 576px) {
-  .cards-header { padding: 0 0.75rem; gap: 0.75rem; }
-  .cards-main   { padding: 1rem 0.5rem 3rem; }
+  .cards-page-top { padding: 2rem 1rem 0; }
+  .cards-main     { padding: 1rem 0.5rem 3rem; }
+}
+
+/* ── Search Bar ──────────────────────────── */
+.cards-search-bar {
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  background: linear-gradient(180deg, #0e0b07 0%, rgba(14,11,7,0.97) 100%);
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  padding: 0.55rem 1.5rem;
+}
+
+.cards-search-bar__input {
+  width: 100%;
+  background: rgba(201,168,76,0.04);
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  padding: 0.45rem 0.9rem;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cards-search-bar__input::placeholder { color: var(--parchment-dim); opacity: 0.5; }
+.cards-search-bar__input:focus {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 12px rgba(201,168,76,0.15);
+}
+.cards-search-bar__input::-webkit-search-cancel-button { opacity: 0.4; }
+
+.cards-no-results {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--parchment-dim);
+  opacity: 0.7;
 }

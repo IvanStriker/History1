@@ -36,6 +36,27 @@ html, body {
   padding: 3rem 1.5rem 4rem;
 }
 
+/* ── Назад ────────────────────────────────── */
+.back-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--parchment-dim);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  margin-bottom: 2.5rem;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--gold-primary); }
+.back-link svg {
+  width: 18px; height: 18px;
+  fill: currentColor; flex-shrink: 0;
+}
+
 /* ── Заголовок ────────────────────────────── */
 .new-item-title {
   font-family: var(--font-display);

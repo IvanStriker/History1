@@ -3,7 +3,7 @@
 {% block title %}{{ title|default('Подборки — Историческая игра') }}{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}?v=4" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}?v=5" />
 {% endblock %}
 
 {% block body_content %}
@@ -22,10 +22,19 @@
   <div class="cat-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
   <div class="cat-rule"></div>
 
+  <!-- Поиск -->
+  <div class="cat-search">
+    <input class="cat-search__input" type="search"
+           id="cat-search" placeholder="Поиск по подборкам…" autocomplete="off">
+  </div>
+
   {% if categories and categories|length > 0 %}
   <div class="categories-list">
+    <p class="cat-no-results" id="cat-no-results" hidden>Подборки не найдены.</p>
     {% for category in categories %}
-    <div class="category-card" id="category-{{ category.id }}">
+    <div class="category-card" id="category-{{ category.id }}"
+         data-name="{{ category.name }}"
+         data-description="{{ category.description or '' }}">
       <div class="category-card__header">
         <span class="category-card__num">{{ loop.index }}</span>
         <h2 class="category-card__name">{{ category.name }}</h2>
@@ -48,7 +57,7 @@
         <span class="category-card__count">
           {{ category.card_entries.count() }} карточек
         </span>
-        <a href="#" class="category-card__view-btn">Открыть подборку</a>
+        <a href="{{ url_for('category_cards', category_id=category.id) }}" class="category-card__view-btn">Открыть подборку</a>
       </div>
     </div>
     {% endfor %}

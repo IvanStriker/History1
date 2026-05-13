@@ -3,11 +3,19 @@
 {% block title %}Профиль — Историческая игра{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}?v=2" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}?v=3" />
 {% endblock %}
 
 {% block body_content %}
 <main class="profile-page">
+
+  <!-- Назад -->
+  <a href="/home" class="back-link">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </svg>
+    На главную
+  </a>
 
   <h1 class="profile-title">Профиль</h1>
   <div class="profile-ornament" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</div>
